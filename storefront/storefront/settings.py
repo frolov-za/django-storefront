@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'products',
     'label_printer.apps.LabelPrinterConfig',
+    'cropperjs',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR, "static"),
 ]
+
+ALLOWED_SHELL_COMMANDS = ['ls /dev/usb/lp*']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

@@ -1,0 +1,12 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    {% if show_find_usb_button %}
+    <li>
+        <a href="{% url 'admin:find_usb_printers' %}" class="button">
+            🔍 Найти USB-принтеры
+        </a>
+    </li>
+    {% endif %}
+{% endblock %}

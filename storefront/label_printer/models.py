@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+import subprocess
 
 class LabelTemplate(models.Model):
     BARCODE_TYPES = [
@@ -44,6 +45,24 @@ class Printer(models.Model):
         elif self.connection_type == 'usb':
             if not self.device_path:
                 raise ValidationError("Для USB-принтера необходимо указать путь к устройству")
+            
+    @classmethod
+    def find_usb_printers(cls):
+        """Поиск подключенных USB-принтеров"""
+        try:
+            # Ищем устройства в /dev
+            result = subprocess.run(
+                ['ls /dev/usb/lp* 2>/dev/null'], 
+                shell=True, 
+                capture_output=True, 
+                text=True,
+                timeout=5
+            )
+            devices = result.stdout.split()
+            return [{'device_path': dev} for dev in devices if dev]
+            
+        except Exception as e:
+            return []
 
     @classmethod
     def get_first_active(cls):

@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="content-main">
+  <div class="module">
+    {% if found_printers %}
+    <table>
+      <caption>Обнаруженные USB-принтеры</caption>
+      <thead>
+        <tr>
+          <th>Путь к устройству</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for printer in found_printers %}
+        <tr>
+          <td>{{ printer.device_path }}</td>
+          <td>
+            <a href="../add/?device_path={{ printer.device_path|urlencode }}&connection_type=usb" 
+               class="button">
+              Добавить принтер
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>USB-принтеры не обнаружены</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
