@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'products',
     'label_printer.apps.LabelPrinterConfig',
     'cropperjs',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
