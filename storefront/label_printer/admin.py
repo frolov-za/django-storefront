@@ -21,6 +21,9 @@ class PrinterAdmin(admin.ModelAdmin):
             'fields': ('device_path',),
             'classes': ('collapse',)
         }),
+        ('DPI Settings', {
+            'fields': ('printer_dpi',),
+        }),
         ('Connection Type', {
             'fields': ('connection_type',)
         })
@@ -80,4 +83,4 @@ class PrinterAdmin(admin.ModelAdmin):
 
 @admin.register(LabelTemplate)
 class LabelTemplateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'barcode_type', 'barcode_height', 'date_format')
+    list_display = ('name', 'barcode_height', 'date_format')

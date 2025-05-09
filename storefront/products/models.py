@@ -2,10 +2,10 @@ from django.db import models
 from cropperjs.models import CropperImageField
 
 class Product(models.Model):
-    name = models.CharField(max_length=100)
-    barcode = models.CharField(max_length=50) #Для объема 1л
-    barcode15 = models.CharField(max_length=50) #Для объема 1.5л
-    description = models.TextField(blank=True)
+    name = models.CharField(max_length=100, help_text="Наименование товара")
+    barcode = models.CharField(max_length=50, help_text="Артикул для тары 1 литр") 
+    barcode15 = models.CharField(max_length=50, help_text="Артикул для тары 1.5 литра")
+    description = models.TextField(blank=True, help_text="Описание товара, отображается при выборе товара")
     image = CropperImageField(dimensions=(350, 350), upload_to='product_images/')
     #image = models.ImageField(upload_to='product_images/')
 
