@@ -27,8 +27,8 @@ def generate_zpl(product_name, barcode, template):
     draw = ImageDraw.Draw(main_image)
     
     try:
-        font_bold = ImageFont.truetype("./static/arial_bold.ttf", 20)
-        font_regular = ImageFont.truetype("./static/times_new_roman.ttf", 20)
+        font_bold = ImageFont.truetype("./static/font/arial_bold.ttf", 20)
+        font_regular = ImageFont.truetype("./static/font/times_new_roman.ttf", 20)
     except IOError:
         font_bold = ImageFont.load_default()
         font_regular = ImageFont.load_default()
