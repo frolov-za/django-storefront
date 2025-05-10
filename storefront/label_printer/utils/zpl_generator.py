@@ -19,7 +19,7 @@ def generate_zpl(product_name, barcode, template):
     
     # Название товара (ниже штрихкода, центрировано)
     product_name_y = barcode_y + template.barcode_height + 10
-    product_name_code = f'^FO{template.product_position}^FB480,7,0,C^A{template.font_letter}N,{template.product_name_font_size},{template.product_name_font_size}^FD{product_name}^FS'
+    product_name_code = f'^FO{template.product_position}^FB230,7,0,C^A{template.font_letter}N,{template.product_name_font_size},{template.product_name_font_size}^FD{product_name}^FS'
     
     # Дата (справа, вертикально)
     #date_x = width - 50
