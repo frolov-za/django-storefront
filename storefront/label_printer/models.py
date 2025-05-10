@@ -19,6 +19,7 @@ class LabelTemplate(models.Model):
     barcode_position = models.CharField(max_length=20, default='20,1', help_text="Указывается в точках в формате 0,0 (^FOx,y)")
     barcode_human_readable = models.BooleanField(default=True)
     product_name_font_size = models.PositiveIntegerField(default=30)
+    product_name_via_pillow = models.BooleanField(default=False, help_text="Имя товара генируется в виде изображения и подставляется в этикетку, применимо, в случае, если в принтер не загружен русский шрифт (есть проблемы с центровкой и качеством шрифта)")
     product_position = models.CharField(max_length=20, default='20,1', help_text="Указывается в точках в формате 0,0 (^FOx,y)")
     date_font_size = models.PositiveIntegerField(default=12)
     date_format = models.CharField(max_length=50, default='%d/%m/%y-%H:%M')
