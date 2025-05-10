@@ -33,8 +33,8 @@
     </div>
     <div class="action-section">
     <h1>Выбор тары</h1>
-    <button onclick="sendPrint(document.getElementById('modalBarcode').textContent = `${selectedProductBarcode}`)">1 Литр</button>
-    <button onclick="sendPrint(document.getElementById('modalBarcode15').textContent = `${selectedProductBarcode15}`)">1,5 Литра</button>
+    <button onclick="sendPrint(selectedProductBarcode)">1 Литр</button>
+    <button onclick="sendPrint(selectedProductBarcode15)">1,5 Литра</button>
     </div>
 </div>
 
@@ -70,20 +70,64 @@
         }, 300);
     });
     
-    function sendPrint(data) {
-        fetch('labels/print/', {
+    function sendPrint(barcode) {
+    fetch('labels/print/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': '{{ csrf_token }}',
         },
-        body: JSON.stringify({ product_name: selectedProductName, barcode: data })
-        })
-        .then(response => response.json())
-        .then(data => {
+        body: JSON.stringify({ product_name: selectedProductName, barcode: barcode })
+    })
+    .then(response => response.json().then(json => {
         document.getElementById('overlay').click();
-        });
+
+        if (response.ok && json.success) {
+            showToast(json.message || 'Этикетка отправлена!', 'success');
+        } else {
+            showToast(json.error || 'Ошибка при печати', 'error');
+        }
+    }))
+    .catch(error => {
+        console.error("Ошибка:", error);
+        showToast('Сервер не ответил', 'error');
+    });
+}
+
+    // CSRF-токен (если Django)
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+        const trimmed = cookie.trim();
+        if (trimmed.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+            break;
+        }
+        }
     }
+    return cookieValue;
+    }   
+
+
+    
+    function showToast(message, type) {
+    console.log("Toast:", message, type);
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast show ${type}`;
+    toast.classList.remove('hidden');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 500);
+    }, 3500);
+}
     </script>
+    <!-- Нотификации -->
+    <div id="toast" class="toast hidden"></div>     
 </body>
 </html>

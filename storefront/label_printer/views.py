@@ -12,13 +12,14 @@ def print_label(request):
         product_name = data['product_name']
         barcode = data['barcode']
     except (KeyError, json.JSONDecodeError):
-        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-    
+        return JsonResponse({'success': False, 'error': 'Некорректные данные запроса'}, status=400)
+
     printer = Printer.get_first_active()
     if not printer or not printer.label_template:
-        return JsonResponse({'error': 'Active printer not found'}, status=400)
-    
+        return JsonResponse({'success': False, 'error': 'Активный принтер или шаблон не найден'}, status=400)
+
     zpl_data = generate_zpl(product_name, barcode, printer.label_template)
     if send_zpl_to_printer(zpl_data, printer):
-        return JsonResponse({'status': 'Label sent successfully'})
-    return JsonResponse({'error': 'Failed to send label'}, status=500)
+        return JsonResponse({'success': True, 'message': 'Этикетка успешно отправлена на печать'})
+    
+    return JsonResponse({'success': False, 'error': 'Не удалось отправить данные на принтер'}, status=500)
