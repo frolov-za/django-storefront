@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('products.urls')),
     path('labels/', include('label_printer.urls')),
+    path('', include('label_printer.urls')),
 ]
 
 if settings.DEBUG:

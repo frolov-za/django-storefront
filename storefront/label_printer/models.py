@@ -80,3 +80,11 @@ class Printer(models.Model):
     @classmethod
     def get_first_active(cls):
         return cls.objects.filter(is_active=True).order_by('connection_type').first()
+
+class LabelPrintLog(models.Model):
+    product_name = models.CharField(max_length=255)
+    barcode = models.CharField(max_length=128)
+    printed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.product_name} ({self.barcode}) — {self.printed_at}"
