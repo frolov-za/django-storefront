@@ -1,10 +1,13 @@
 from django.contrib import admin
 from django.contrib import messages
 from django.urls import reverse, path
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.template.response import TemplateResponse
-from django.utils.html import format_html
+from django.shortcuts import get_object_or_404, render
 from .models import Printer, LabelTemplate
+from .utils.zpl_generator import generate_zpl
+from .utils.zpl_to_png import zpl_to_png
+
 
 @admin.register(Printer)
 class PrinterAdmin(admin.ModelAdmin):
@@ -84,3 +87,25 @@ class PrinterAdmin(admin.ModelAdmin):
 @admin.register(LabelTemplate)
 class LabelTemplateAdmin(admin.ModelAdmin):
     list_display = ('name', 'barcode_height', 'date_format')
+    change_form_template = 'admin/labeltemplate.html'
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('<int:pk>/preview/', self.admin_site.admin_view(self.preview_label), name='labeltemplate_preview'),
+        ]
+        return custom_urls + urls
+
+    def preview_label(self, request, pk):
+        print(f"✅ Вызван preview_label c pk={pk}")
+        barcode="2360825880688"
+        product_name="Test Drink Very Good"
+        template = get_object_or_404(LabelTemplate, pk=pk)
+        zpl = generate_zpl(product_name, barcode, template)
+        print("Отправка на генерацию PNG")
+        try:
+            print(zpl)
+            png_data = zpl_to_png(zpl)
+            return HttpResponse(png_data, content_type='image/png')
+        except Exception as e:
+            return HttpResponse(f"Ошибка рендеринга ZPL: {e}", status=500)

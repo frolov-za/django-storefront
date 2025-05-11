@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 tz = pytz.timezone("Europe/Moscow") 
 
 def generate_zpl(product_name, barcode, template):
+
     width = int(template.label_wight) if template.label_wight is not None else str("") # 3cm * 80 dpi
     height = int(template.label_hight) if template.label_hight is not None else str("")  # 2cm * 80 dpi
     date_str = datetime.now(tz).strftime(template.date_format)
@@ -46,7 +47,7 @@ def generate_zpl(product_name, barcode, template):
     # Дата (справа, вертикально)
     #date_x = width - 50
     date_code = f'^FO{template.date_position}^FB100,7,0,C^A0B,{template.date_font_size},{template.date_font_size}^FD{date_str}^FS'
-    
+ 
     return f"""
     ^XA
     ^LL{height}
