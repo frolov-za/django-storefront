@@ -1,0 +1,15 @@
+asgiref==3.8.1
+certifi==2025.4.26
+charset-normalizer==3.4.2
+Django==5.2
+django-cleanup==9.0.0
+django-pwa==2.0.1
+idna==3.10
+pillow==11.2.1
+python-barcode==0.15.1
+pytz==2025.2
+requests==2.32.3
+setuptools==80.3.1
+sqlparse==0.5.3
+urllib3==2.4.0
+zplgrf==1.6.0
