@@ -1,76 +1,35 @@
-<!-- templates/dashboard.html -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Label Print Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Статистика продаж</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
 </head>
 <body>
-
-<!-- templates/dashboard.html -->
-<h2>Data Preview</h2>
-<pre>{{ daily_data }}</pre>
-<pre>{{ weekly_data }}</pre>
-<pre>{{ monthly_data }}</pre>
-
-    <h1>Label Print Dashboard</h1>
-
-    <!-- Форма фильтрации по датам -->
-    <form method="get" style="margin-bottom: 20px;">
-        <label>Start date:
-            <input type="date" name="start_date" value="{{ start_date }}">
-        </label>
-        <label>End date:
-            <input type="date" name="end_date" value="{{ end_date }}">
-        </label>
-        <button type="submit">Apply</button>
-    </form>
-
-    <h2>Daily</h2>
-    <canvas id="dailyChart" width="400" height="200"></canvas>
-
-    <h2>Weekly</h2>
-    <canvas id="weeklyChart" width="400" height="200"></canvas>
-
-    <h2>Monthly</h2>
-    <canvas id="monthlyChart" width="400" height="200"></canvas>
-
-    <script>
-        function prepareChartData(data, timeKey) {
-            const labels = [...new Set(data.map(item => item[timeKey]))].sort();
-            const products = [...new Set(data.map(item => item.product_name))];
-            
-            const datasets = products.map(product => {
-                const counts = labels.map(label => {
-                    const item = data.find(d => d.product_name === product && d[timeKey] === label);
-                    return item ? item.count : 0;
-                });
-                
-                return {
-                    label: product,
-                    data: counts,
-                    backgroundColor: `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.6)`,
-                };
-            });
-            
-            return { labels, datasets };
-        }
+    <h1>Статистика продаж напитков</h1>
     
-        // Инициализация графиков
-        new Chart(document.getElementById('dailyChart'), {
-            type: 'bar',
-            data: prepareChartData({{ daily_data|safe }}, 'day')
-        });
-    
-        new Chart(document.getElementById('weeklyChart'), {
-            type: 'bar',
-            data: prepareChartData({{ weekly_data|safe }}, 'week')
-        });
-    
-        new Chart(document.getElementById('monthlyChart'), {
-            type: 'bar',
-            data: prepareChartData({{ monthly_data|safe }}, 'month')
-        });
-    </script>
+    <h2>За последние 24 часа: {{ daily_total|floatformat:2 }} л</h2>
+    <h2>За последние 7 дней: {{ weekly_total|floatformat:2 }} л</h2>
+
+    <h3>Детализация по дням:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Объем (л)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for day in daily_breakdown %}
+            <tr>
+                <td>{{ day.date }}</td>
+                <td>{{ day.total|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

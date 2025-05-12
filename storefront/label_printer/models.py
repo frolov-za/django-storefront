@@ -3,18 +3,11 @@ from django.core.exceptions import ValidationError
 import subprocess
 
 class LabelTemplate(models.Model):
-    # BARCODE_TYPES = [
-    #     ('CODE128', 'CODE128'),
-    #     ('CODE39', 'CODE39'),
-    #     ('EAN13', 'EAN13'),
-    # ]
-    
     name = models.CharField(max_length=255, unique=True)
     label_hight = models.CharField(max_length=20, default='160',blank=True, null=True, help_text="Указывается в точках")
     label_wight = models.CharField(max_length=20, default='240',blank=True, null=True, help_text="Указывается в точках")
     font_name = models.CharField(max_length=50, default='E:TT0003M_.FNT')
     font_letter = models.CharField(max_length=1, default='0')
-    #barcode_type = models.CharField(max_length=50, choices=BARCODE_TYPES, default='EAN13')
     barcode_height = models.PositiveIntegerField(default=100)
     barcode_position = models.CharField(max_length=20, default='20,1', help_text="Указывается в точках в формате 0,0 (^FOx,y)")
     barcode_human_readable = models.BooleanField(default=True)
@@ -85,6 +78,7 @@ class LabelPrintLog(models.Model):
     product_name = models.CharField(max_length=255)
     barcode = models.CharField(max_length=128)
     printed_at = models.DateTimeField(auto_now_add=True)
+    volume = models.CharField(max_length=10)
 
     def __str__(self):
-        return f"{self.product_name} ({self.barcode}) — {self.printed_at}"
+        return f"{self.product_name} ({self.barcode}) ({self.volume}) — {self.printed_at}"
