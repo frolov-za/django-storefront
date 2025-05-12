@@ -11,6 +11,7 @@
 </head>
 <header>
     <button class="refresh-button" onclick="forceReload()">♻️</button>
+    <a href="/dashboard" class="dashboard-button">📋</a>
     <a href="/admin"><img src="static/img/gastonom-logo.png" width="750" height="55" alt="gastonom-logo"></a>
 </header>
 <body>
@@ -18,7 +19,7 @@
         {% for product in products %}
             <div class="card" data-id="{{ product.id }}" data-name="{{ product.name }}" data-description="{{ product.description }}" data-barcode="{{ product.barcode }}" data-barcode15="{{ product.barcode15 }}">
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" width="100" height="100"><br>
-                <!-- {{ product.name }} -->
+                {{ product.name }}
             </div>
         {% endfor %}
     </div>

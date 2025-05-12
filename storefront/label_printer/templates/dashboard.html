@@ -1,35 +1,294 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Статистика продаж</title>
-    <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
-</head>
 <body>
     <h1>Статистика продаж напитков</h1>
     
-    <h2>За последние 24 часа: {{ daily_total|floatformat:2 }} л</h2>
-    <h2>За последние 7 дней: {{ weekly_total|floatformat:2 }} л</h2>
+    <!-- Общая статистика -->
+    <div class="summary">
+        <h2>За последние 24 часа: {{ daily_total|floatformat:2 }} л</h2>
+        <h2>За последние 7 дней: {{ weekly_total|floatformat:2 }} л</h2>
+    </div>
 
-    <h3>Детализация по дням:</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Дата</th>
-                <th>Объем (л)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for day in daily_breakdown %}
-            <tr>
-                <td>{{ day.date }}</td>
-                <td>{{ day.total|floatformat:2 }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Навигационные вкладки -->
+    <div class="tabs">
+        <button class="tablink active" onclick="openTab(event, 'daily-products')">День</button>
+        <button class="tablink" onclick="openTab(event, 'weekly-products')">Неделя</button>
+        <button class="tablink" onclick="openTab(event, 'daily-breakdown')">По дням</button>
+        <button class="tablink" onclick="openTab(event, 'custom-date')">Кастомная дата</button>
+    </div>
+
+    <!-- Контент вкладок -->
+    <div id="daily-products" class="tabcontent" style="display: block;">
+        <h3>Продажи за день по напиткам:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Напиток</th>
+                    <th>Объем (л)</th>
+                    <th>Этикеток</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in daily_by_product %}
+                <tr>
+                    <td>{{ product.product_name }}</td>
+                    <td>{{ product.total|floatformat:2 }}</td>
+                    <td>{{ product.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="weekly-products" class="tabcontent">
+        <h3>Продажи за неделю по напиткам:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Напиток</th>
+                    <th>Объем (л)</th>
+                    <th>Этикеток</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in weekly_by_product %}
+                <tr>
+                    <td>{{ product.product_name }}</td>
+                    <td>{{ product.total|floatformat:2 }}</td>
+                    <td>{{ product.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="daily-breakdown" class="tabcontent">
+        <h3>Ежедневная статистика:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Объем (л)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in daily_breakdown %}
+                <tr>
+                    <td>{{ day.date }}</td>
+                    <td>{{ day.total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="custom-date" class="tabcontent">
+        <div class="custom-date-section">
+            <h3>Статистика за произвольный период</h3>
+            <form method="get" action="." id="date-range-form">
+                <div class="date-range-picker">
+                    <input type="date" name="start_date" 
+                         value="{{ start_date|default:'' }}" 
+                         max="{{ timezone.now|date:'Y-m-d' }}"
+                         required>
+                    <span>по</span>
+                    <input type="date" name="end_date" 
+                         value="{{ end_date|default:'' }}" 
+                         max="{{ timezone.now|date:'Y-m-d' }}"
+                         required>
+                </div>
+                <input type="hidden" name="tab" value="custom-date">
+                <button type="submit">Показать</button>
+            </form>
+        
+            {% if date_stats %}        <div class="date-stats">
+                <h4>За период с {{ start_date }} по {{ end_date }}:</h4>
+                <p>Общий объем: {{ date_stats.total_volume|default:0|floatformat:2 }} л</p>
+                <p>Всего этикеток: {{ date_stats.total_labels|default:0 }}</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Напиток</th>
+                            <th>Объем</th>
+                            <th>Этикеток</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in date_by_product %}
+                        <tr>
+                            <td>{{ product.product_name }}</td>
+                            <td>{{ product.total|floatformat:2 }} л</td>
+                            <td>{{ product.count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+
+    <style>
+        .tabs {
+            margin: 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tablink {
+            background-color: #f8f9fa;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 4px 4px 0 0;
+            margin-right: 4px;
+        }
+        
+        .tablink:hover {
+            background-color: #e9ecef;
+        }
+        
+        .tablink.active {
+            background-color: #4CAF50;
+            color: white;
+            position: relative;
+            top: 1px;
+        }
+        
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            animation: fadeEffect 0.5s;
+        }
+        
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .custom-date-section form {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .custom-date-section input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .date-range-picker {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .date-range-picker span {
+        color: #666;
+    }
+    
+    .date-range-picker input[type="date"] {
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        width: 180px;
+    }
+    </style>
+
+<script>
+    function openTab(evt, tabName) {
+        let tabcontent = document.getElementsByClassName("tabcontent");
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        
+        let tablinks = document.getElementsByClassName("tablink");
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add("active");
+        
+        // Сохраняем выбранную вкладку в localStorage
+        localStorage.setItem('activeTab', tabName);
+    }
+
+    // Восстанавливаем активную вкладку при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        let activeTab = localStorage.getItem('activeTab');
+        
+        // Если есть сохраненная вкладка - активируем ее
+        if (activeTab) {
+            const tabButton = Array.from(document.getElementsByClassName('tablink'))
+                .find(button => button.getAttribute('onclick').includes(activeTab));
+            
+            if (tabButton) {
+                tabButton.click();
+            } else {
+                document.querySelector('.tablink').click();
+            }
+        } else {
+            // По умолчанию активируем первую вкладку
+            document.querySelector('.tablink').click();
+        }
+    });
+
+    // Валидация диапазона дат
+    document.getElementById('date-range-form').addEventListener('submit', function(e) {
+        const startDate = new Date(this.start_date.value);
+        const endDate = new Date(this.end_date.value);
+        
+        if (startDate > endDate) {
+            alert('Дата окончания не может быть раньше даты начала');
+            e.preventDefault();
+        }
+    });
+
+    // Инициализация дат при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const startDateInput = document.querySelector('input[name="start_date"]');
+        const endDateInput = document.querySelector('input[name="end_date"]');
+        
+        if (!startDateInput.value && urlParams.has('start_date')) {
+            startDateInput.value = urlParams.get('start_date');
+        }
+        if (!endDateInput.value && urlParams.has('end_date')) {
+            endDateInput.value = urlParams.get('end_date');
+        }
+    });
+</script>
+{% if error_message %}
+<div class="alert alert-error">
+    {{ error_message }}
+</div>
+{% endif %}
+
 </body>
-</html>
+

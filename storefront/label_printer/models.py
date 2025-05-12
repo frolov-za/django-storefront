@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 import subprocess
 
 class LabelTemplate(models.Model):
@@ -77,8 +78,10 @@ class Printer(models.Model):
 class LabelPrintLog(models.Model):
     product_name = models.CharField(max_length=255)
     barcode = models.CharField(max_length=128)
-    printed_at = models.DateTimeField(auto_now_add=True)
+    printed_at = models.DateTimeField(auto_now_add=True, verbose_name='Время печати')
     volume = models.CharField(max_length=10)
+
+    
 
     def __str__(self):
         return f"{self.product_name} ({self.barcode}) ({self.volume}) — {self.printed_at}"

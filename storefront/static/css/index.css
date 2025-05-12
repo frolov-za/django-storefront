@@ -4,6 +4,8 @@ font-family: 'Segoe UI', sans-serif;
 background: url('/static/img/bg_wood.jpg');
 background-size: 100% auto;
 background-color: #f3c7c7; /* запасной цвет фона */
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+                 'Helvetica Neue', Arial, sans-serif; /* Системные шрифты */
 }
 
 header {
@@ -49,6 +51,36 @@ header a {
     transform: translateY(-50%) scale(1);
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
+
+/* Стили для кнопки обновления страницы */
+.dashboard-button {
+    position: absolute;
+    right: 30px; /* Изменили left на right */
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 12px 24px;
+    background: #1b1b1b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dashboard-button:hover {
+    background: #2e2e2e;
+    transform: translateY(-50%) scale(1.05); /* Сохраняем вертикальное выравнивание */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.dashboard-button:active {
+    transform: translateY(-50%) scale(1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
 /* Сетка карточек */
 .grid {
     display: grid;
@@ -155,7 +187,7 @@ header a {
     color: white;
     border: none;
     padding: 10px 16px;
-    height: 90px;
+    height: 120px;
     border-radius: 12px;
     font-size: 24px;
     cursor: pointer;

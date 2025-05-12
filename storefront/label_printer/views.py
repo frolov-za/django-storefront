@@ -1,88 +1,170 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
+from django.utils import timezone
+from django.db.models import Sum, Count, Q, F, FloatField  # Исправлено здесь
+from django.db.models.functions import TruncDate, Cast
+from django.shortcuts import render
+from datetime import datetime, timedelta
 import json
+import logging
+
 from .models import Printer, LabelPrintLog
 from products.models import Product
 from .utils.zpl_generator import generate_zpl
 from .utils.printer_service import send_zpl_to_printer
-from django.db.models import Q
-from django.http import JsonResponse
 
-from django.shortcuts import render
-from django.utils import timezone
-from datetime import timedelta
-from django.db.models import Sum
-from label_printer.models import LabelPrintLog
+logger = logging.getLogger(__name__)
 
+def validate_date_range(start_date_str, end_date_str):
+    try:
+        # Парсим строки в наивные datetime объекты (без часового пояса)
+        naive_start = datetime.strptime(start_date_str, '%Y-%m-%d')
+        naive_end = datetime.strptime(end_date_str, '%Y-%m-%d')
+        
+        # Конвертируем в aware datetime объекты с текущим часовым поясом Django
+        tz = timezone.get_current_timezone()
+        start_date = timezone.make_aware(naive_start, tz)
+        end_date = timezone.make_aware(naive_end, tz)
+        
+        # Получаем текущее время с учетом часового пояса
+        now = timezone.now()
+        
+        if start_date > now:
+            raise ValueError("Дата начала не может быть в будущем")
+        if end_date > now:
+            raise ValueError("Дата окончания не может быть в будущем")
+        if start_date > end_date:
+            raise ValueError("Дата начала должна быть раньше даты окончания")
+            
+        return start_date.date(), end_date.date()
+    
+    except ValueError as e:
+        if "unconverted data remains" in str(e):
+            raise ValueError("Некорректный формат даты. Используйте YYYY-MM-DD")
+            
+        return start_date, end_date
+    except ValueError as e:
+        logger.error(f"Date validation error: {e}")
+        raise
 
 @require_POST
 def print_label(request):
     try:
         data = json.loads(request.body)
-        barcode = data['barcode']
+        product_name = data.get('product_name')
+        barcode = data.get('barcode')
         
-        # Находим продукт по barcode или barcode15
+        if not product_name or not barcode:
+            return JsonResponse({'success': False, 'error': 'Отсутствуют обязательные поля'}, status=400)
+        
         product = Product.objects.filter(
             Q(barcode=barcode) | Q(barcode15=barcode)
         ).first()
         
         if not product:
-            return JsonResponse({'success': False, 'error': 'Продукт не найден'}, status=400)
-        
-        # Определяем объем
-        volume = '1.5' if product.barcode15 == barcode else '1'
+            return JsonResponse({'success': False, 'error': 'Продукт не найден'}, status=404)
         
         # Создаем запись в логе
         LabelPrintLog.objects.create(
             product_name=product.name,
             barcode=barcode,
-            volume=volume
+            volume='1.5' if product.barcode15 == barcode else '1'
         )
         
-    except (KeyError, json.JSONDecodeError) as e:
-        return JsonResponse({'success': False, 'error': 'Некорректные данные'}, status=400)
+        printer = Printer.get_first_active()
+        if not printer or not printer.label_template:
+            return JsonResponse({'success': False, 'error': 'Принтер не настроен'}, status=400)
 
-    printer = Printer.get_first_active()
-    if not printer or not printer.label_template:
-        return JsonResponse({'success': False, 'error': 'Активный принтер или шаблон не найден'}, status=400)
+        zpl_data = generate_zpl(product_name, barcode, printer.label_template)
+        if send_zpl_to_printer(zpl_data, printer):
+            return JsonResponse({'success': True})
+            
+        return JsonResponse({'success': False, 'error': 'Ошибка печати'}, status=500)
 
-    zpl_data = generate_zpl(product_name, barcode, printer.label_template)
-    if send_zpl_to_printer(zpl_data, printer):
-        return JsonResponse({'success': True, 'message': 'Этикетка успешно отправлена на печать'})
-
-    return JsonResponse({'success': False, 'error': 'Не удалось отправить данные на принтер'}, status=500)
-
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Неверный формат данных'}, status=400)
+    except Exception as e:
+        logger.error(f"Print error: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Внутренняя ошибка сервера'}, status=500)
 
 def sales_dashboard(request):
-    today = timezone.now().date()
-    start_of_day = timezone.make_aware(timezone.datetime(today.year, today.month, today.day))
+    context = {'error_message': None}
+    now = timezone.now()
+    today = now.date()
     
-    # Данные за день
-    daily_sales = LabelPrintLog.objects.filter(
-        printed_at__gte=start_of_day
-    ).aggregate(
-        total=Sum('volume')
-    )['total'] or 0
+    # Обработка диапазона дат
+    try:
+        if 'start_date' in request.GET and 'end_date' in request.GET:
+            start_date, end_date = validate_date_range(
+                request.GET['start_date'],
+                request.GET['end_date']
+            )
+            context.update({
+                'start_date': start_date.isoformat(),
+                'end_date': end_date.isoformat(),
+                'date_stats': get_date_stats(start_date, end_date),
+                'date_by_product': get_products_stats(start_date, end_date)
+            })
+    except ValueError as e:
+        context['error_message'] = str(e)
     
-    # Данные за неделю
-    start_of_week = start_of_day - timedelta(days=7)
-    weekly_sales = LabelPrintLog.objects.filter(
-        printed_at__gte=start_of_week
-    ).aggregate(
-        total=Sum('volume')
-    )['total'] or 0
-    
-    # Детализация по дням
-    daily_breakdown = (
+    # Основная статистика
+    try:
+        # Ежедневная статистика
+        daily_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        daily_data = LabelPrintLog.objects.filter(printed_at__gte=daily_start)
+        
+        # Еженедельная статистика
+        weekly_start = daily_start - timedelta(days=7)
+        weekly_data = LabelPrintLog.objects.filter(printed_at__gte=weekly_start)
+        
+        context.update({
+            'daily_total': get_total_volume(daily_data),
+            'weekly_total': get_total_volume(weekly_data),
+            'daily_by_product': get_product_stats(daily_data),
+            'weekly_by_product': get_product_stats(weekly_data),
+            'daily_breakdown': get_daily_breakdown(),
+        })
+    except Exception as e:
+        logger.error(f"Dashboard error: {e}")
+        context['error_message'] = 'Ошибка загрузки статистики'
+
+    return render(request, 'dashboard.html', context)
+
+def get_total_volume(queryset):
+    return queryset.aggregate(
+        total=Sum(Cast('volume', output_field=FloatField()))  # Теперь FloatField доступен
+    )['total'] or 0.0
+
+def get_product_stats(queryset):
+    return queryset.values('product_name').annotate(
+        total=Sum(Cast('volume', FloatField())),
+        count=Count('id')
+    ).order_by('-total')
+
+def get_daily_breakdown(days=30):
+    return (
         LabelPrintLog.objects
-        .extra({'date': "date(printed_at)"})
+        .annotate(date=TruncDate('printed_at'))
         .values('date')
-        .annotate(total=Sum('volume'))
-        .order_by('-date')
+        .annotate(total=Sum(Cast('volume', FloatField())))
+        .order_by('-date')[:days]
     )
-    
-    return render(request, 'dashboard.html', {
-        'daily_total': float(daily_sales),
-        'weekly_total': float(weekly_sales),
-        'daily_breakdown': daily_breakdown,
-    })
+
+def get_date_stats(start_date, end_date):
+    queryset = LabelPrintLog.objects.filter(
+        printed_at__date__gte=start_date,
+        printed_at__date__lte=end_date
+    )
+    return {
+        'total_volume': get_total_volume(queryset),
+        'total_labels': queryset.count()
+    }
+
+def get_products_stats(start_date, end_date):
+    return get_product_stats(
+        LabelPrintLog.objects.filter(
+            printed_at__date__gte=start_date,
+            printed_at__date__lte=end_date
+        )
+    )

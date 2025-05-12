@@ -100,6 +100,7 @@ class LabelTemplateAdmin(admin.ModelAdmin):
         print(f"✅ Вызван preview_label c pk={pk}")
         barcode="2360825880688"
         product_name="Test Drink Very Good"
+
         template = get_object_or_404(LabelTemplate, pk=pk)
         zpl = generate_zpl(product_name, barcode, template)
         print("Отправка на генерацию PNG")
