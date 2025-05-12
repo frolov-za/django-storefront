@@ -9,7 +9,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>StoreFront</title>
 </head>
-<header><a href="/admin"><img src="static/img/gastonom-logo.png"  width="750" height="60" alt="gastonom-logo"></a></header>
+<header>
+    <button class="refresh-button" onclick="forceReload()">♻️</button>
+    <a href="/admin"><img src="static/img/gastonom-logo.png" width="750" height="55" alt="gastonom-logo"></a>
+</header>
 <body>
     <div class="grid"> 
         {% for product in products %}
@@ -126,6 +129,19 @@
         }, 500);
     }, 3500);
 }
+
+// JS кнопки обновления страницы
+const forceReload = () => {
+            // Создаем объект URL для работы с параметрами
+            const url = new URL(window.location.href);
+            
+            // Добавляем/обновляем параметр 'force'
+            url.searchParams.set('force', Date.now());
+            
+            // Перезагружаем страницу
+            window.location.href = url.toString();
+        };
+
     </script>
     <!-- Нотификации -->
     <div id="toast" class="toast hidden"></div>     

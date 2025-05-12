@@ -6,6 +6,49 @@ background-size: 100% auto;
 background-color: #f3c7c7; /* запасной цвет фона */
 }
 
+header {
+    position: relative; /* Для позиционирования кнопки относительно header */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000000;
+    height: 59px;
+    padding: 0 20px; /* Добавляем отступы по бокам */
+}
+
+/* Стили для логотипа */
+header a {
+    margin: 0 auto; /* Центрируем логотип */
+}
+
+/* Стили для кнопки обновления страницы */
+.refresh-button {
+    position: absolute; /* Абсолютное позиционирование */
+    left: 20px; /* Отступ слева */
+    top: 50%; /* Центрирование по вертикали */
+    transform: translateY(-50%); /* Точное выравнивание */
+    padding: 12px 24px;
+    background: #1b1b1b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1; /* Кнопка поверх других элементов */
+}
+
+.refresh-button:hover {
+    background: #2e2e2e;
+    transform: translateY(-50%) scale(1.05); /* Сохраняем вертикальное центрирование */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.refresh-button:active {
+    transform: translateY(-50%) scale(1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
 /* Сетка карточек */
 .grid {
     display: grid;
@@ -128,15 +171,6 @@ background-color: #f3c7c7; /* запасной цвет фона */
 .modal .skip_info_field {
     display: none
 }
-header{
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #000000;
-    height: 59px;
-
-}
 
 .toast {
   position: fixed;
@@ -168,3 +202,4 @@ header{
 .hidden {
   display: none;
 }
+
