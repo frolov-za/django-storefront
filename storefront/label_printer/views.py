@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
 from django.utils import timezone
-from django.db.models import Sum, Count, Q, F, FloatField  # Исправлено здесь
+from django.db.models import Sum, Count, Q, F, FloatField
 from django.db.models.functions import TruncDate, Cast
 from django.shortcuts import render
 from datetime import datetime, timedelta
@@ -12,6 +12,9 @@ from .models import Printer, LabelPrintLog
 from products.models import Product
 from .utils.zpl_generator import generate_zpl
 from .utils.printer_service import send_zpl_to_printer
+from django.utils.timezone import localtime
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +114,7 @@ def sales_dashboard(request):
     # Основная статистика
     try:
         # Ежедневная статистика
-        daily_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        daily_start = localtime(now).replace(hour=0, minute=0, second=0, microsecond=0)
         daily_data = LabelPrintLog.objects.filter(printed_at__gte=daily_start)
         
         # Еженедельная статистика
