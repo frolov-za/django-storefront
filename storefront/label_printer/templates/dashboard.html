@@ -129,13 +129,19 @@
     </div>
 
     <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
         .tabs {
             margin: 20px 0;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #444;
         }
         
         .tablink {
-            background-color: #f8f9fa;
+            background-color: #2d2d2d;
+            color: #e0e0e0;
             border: none;
             padding: 12px 24px;
             cursor: pointer;
@@ -145,11 +151,11 @@
         }
         
         .tablink:hover {
-            background-color: #e9ecef;
+            background-color: #3d3d3d;
         }
         
         .tablink.active {
-            background-color: #4CAF50;
+            background-color: #388E3C; /* Более темный оттенок зеленого */
             color: white;
             position: relative;
             top: 1px;
@@ -158,8 +164,9 @@
         .tabcontent {
             display: none;
             padding: 20px;
-            border: 1px solid #ddd;
+            border: 1px solid #444;
             border-top: none;
+            background-color: #1e1e1e;
             animation: fadeEffect 0.5s;
         }
         
@@ -167,7 +174,7 @@
             from {opacity: 0;}
             to {opacity: 1;}
         }
-
+    
         table {
             width: 100%;
             border-collapse: collapse;
@@ -177,18 +184,18 @@
         th, td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #444;
         }
         
         th {
-            background-color: #4CAF50;
+            background-color: #388E3C; /* Более темный оттенок зеленого */
             color: white;
         }
         
         tr:hover {
-            background-color: #f5f5f5;
+            background-color: #2d2d2d;
         }
-
+    
         .custom-date-section form {
             margin: 20px 0;
             display: flex;
@@ -198,26 +205,31 @@
         
         .custom-date-section input[type="date"] {
             padding: 8px;
-            border: 1px solid #ced4da;
+            border: 1px solid #444;
             border-radius: 4px;
+            background-color: #2d2d2d;
+            color: #e0e0e0;
         }
+        
         .date-range-picker {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 15px;
-    }
-    
-    .date-range-picker span {
-        color: #666;
-    }
-    
-    .date-range-picker input[type="date"] {
-        padding: 8px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        width: 180px;
-    }
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .date-range-picker span {
+            color: #aaa;
+        }
+        
+        .date-range-picker input[type="date"] {
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            width: 180px;
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+        }
     </style>
 
 <script>

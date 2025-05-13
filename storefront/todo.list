@@ -10,7 +10,7 @@
 +10. Вывод ошибки при печати
 +11. Ролевая модель для "tovaroved"
 +12. Вывод ошибок и кодов ответа на фронтенд
-+-13. Статистика печати в литрах в телегу
++13. Статистика печати в литрах в телегу
 +14. Сформировать requirements.txt
 -15. Написать dockerfile 
 -16. Написать dockercompose.yml
@@ -48,3 +48,7 @@ A0N - загруженный шрифт в принтер (использует�
 
 
 pip freeze > requirements.txt
+
+celery -A storefront beat --loglevel=info
+
+celery -A storefront worker --loglevel=info
