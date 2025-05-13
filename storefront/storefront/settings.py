@@ -1,10 +1,13 @@
 from pathlib import Path
 from celery.schedules import crontab
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-TELEGRAM_BOT_TOKEN = "7989753628:AAF6QeJqal5WWytcR5rD4PSqew8XFgDVAvM"
-TELEGRAM_CHAT_ID = "376816770"
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 SECRET_KEY = 'your-secret-key'
 DEBUG = True
