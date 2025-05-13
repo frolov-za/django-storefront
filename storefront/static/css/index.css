@@ -135,7 +135,7 @@ header a {
     background: #fff;
     border-radius: 20px;
     width: 1000px;
-    height: 400px;
+    height: 500px;
     max-width: 90%;
     display: flex;
     flex-direction: row;
@@ -173,6 +173,11 @@ header a {
     top: 0;                  /* Отступ от верхней границы блока */
 }
 
+.description-section {
+    max-height: 500px; /* Установите максимальную высоту, по необходимости */
+    overflow-y: auto;  /* Включает вертикальную прокрутку */
+}
+
 /* Правая часть с кнопками */
 .modal .action-section {
     flex: 1;
@@ -181,13 +186,22 @@ header a {
     /* justify-content: center; */
     gap: 10px;
     padding: 20px;
+    justify-content: center; /* Выравниваем по вертикали */
+    text-align: center;
+    padding-top: 10px; 
 }
+
+.modal .action-section h1 {
+    margin-top: 0;             /* Убираем отступ сверху для заголовка */
+}
+
+
 .modal .action-section button {
     background-color: #e74c3c;
     color: white;
     border: none;
     padding: 10px 16px;
-    height: 120px;
+    height: 140px;
     border-radius: 12px;
     font-size: 24px;
     cursor: pointer;
@@ -204,6 +218,8 @@ header a {
 .modal .skip_info_field {
     display: none
 }
+
+
 
 .toast {
   position: fixed;
