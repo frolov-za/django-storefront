@@ -1,6 +1,10 @@
 from pathlib import Path
+from celery.schedules import crontab
 import os
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+TELEGRAM_BOT_TOKEN = "7989753628:AAF6QeJqal5WWytcR5rD4PSqew8XFgDVAvM"
+TELEGRAM_CHAT_ID = "376816770"
 
 SECRET_KEY = 'your-secret-key'
 DEBUG = True
@@ -21,6 +25,7 @@ INSTALLED_APPS = [
     'cropperjs',
     'django_cleanup.apps.CleanupConfig',
     'pwa',
+    'django_celery_beat',
 ]
 
 PWA_APP_NAME = 'StoreFront'
@@ -97,3 +102,9 @@ LOGGING = {
         'level': 'DEBUG',
     },
 }
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

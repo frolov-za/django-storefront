@@ -11,7 +11,9 @@
 </head>
 <header>
     <button class="refresh-button" onclick="forceReload()">♻️</button>
+    {% if request.user.is_authenticated and request.user.username == "admin" %}
     <a href="/dashboard" class="dashboard-button">📋</a>
+    {% endif %}
     <a href="/admin"><img src="static/img/gastonom-logo.png" width="750" height="55" alt="gastonom-logo"></a>
 </header>
 <body>
