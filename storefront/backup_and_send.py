@@ -12,7 +12,7 @@ import requests
 BASE_DIR = './'  # Путь к проекту на хосте
 BACKUP_DIR = './backups'
 DB_FILENAME = 'db.sqlite3'  # или используем дамп ниже
-TOKEN = '7989753628:AAF6QeJqal5WWytcR5rD4PSqew8XFgDVAvM'
+TOKEN = 'token'
 CHAT_ID = '376816770'
 KEEP_BACKUPS = 2
 

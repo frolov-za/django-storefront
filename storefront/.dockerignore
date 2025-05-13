@@ -4,6 +4,7 @@ __pycache__
 *.pyd
 .Python
 env
+.env
 pip-log.txt
 pip-delete-this-directory.txt
 .tox
@@ -18,3 +19,4 @@ coverage.xml
 .mypy_cache
 .pytest_cache
 .hypothesis
+.DS_Store
