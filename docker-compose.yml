@@ -1,0 +1,64 @@
+services:
+  web:
+    build: ./app
+    volumes:
+      - ./static:/app/static
+      - ./media:/app/media
+      - uwsgi-socket:/tmp/uwsgi
+    command: ["uwsgi", "--ini", "uwsgi.ini"]
+    expose:
+      - 8000
+    env_file:
+      - .env
+
+
+  celery_beat:
+    build: ./app
+    volumes:
+      - ./static:/app/static
+      - ./media:/app/media
+      - uwsgi-socket:/tmp/uwsgi
+    command: ["celery", "-A", "storefront", "beat", "--loglevel=info"]
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+  celery_worker:
+    build: ./app
+    volumes:
+      - ./static:/app/static
+      - ./media:/app/media
+      - uwsgi-socket:/tmp/uwsgi
+    command: ["celery", "-A", "storefront", "worker", "--loglevel=info"]
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/certs:/etc/nginx/certs
+      - ./static:/static
+      - ./media:/media
+      - uwsgi-socket:/tmp/uwsgi
+    depends_on:
+      - web
+
+volumes:
+  uwsgi-socket:
+  redis-data:
