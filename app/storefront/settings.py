@@ -21,6 +21,8 @@ CSRF_TRUSTED_ORIGINS = [
 TIME_ZONE = 'Europe/Moscow'
 USE_TZ = True
 
+LOGOUT_REDIRECT_URL = '/'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
