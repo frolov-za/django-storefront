@@ -2,37 +2,36 @@ services:
   web:
     build: ./app
     volumes:
-      - ./static:/app/static
+      - ./data:/app/data   
+      - static_volume:/app/staticfiles
       - ./media:/app/media
       - uwsgi-socket:/tmp/uwsgi
-    command: ["uwsgi", "--ini", "uwsgi.ini"]
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             gunicorn storefront.wsgi:application --bind 0.0.0.0:8000"
     expose:
       - 8000
     env_file:
-      - .env
+      - .env_docker
 
 
   celery_beat:
     build: ./app
     volumes:
-      - ./static:/app/static
-      - ./media:/app/media
-      - uwsgi-socket:/tmp/uwsgi
+      - ./data:/app/data   
     command: ["celery", "-A", "storefront", "beat", "--loglevel=info"]
     env_file:
-      - .env
+      - .env_docker
     depends_on:
       - redis
 
   celery_worker:
     build: ./app
     volumes:
-      - ./static:/app/static
-      - ./media:/app/media
-      - uwsgi-socket:/tmp/uwsgi
+      - ./data:/app/data
     command: ["celery", "-A", "storefront", "worker", "--loglevel=info"]
     env_file:
-      - .env
+      - .env_docker
     depends_on:
       - redis
       
@@ -50,10 +49,11 @@ services:
     image: nginx:alpine
     ports:
       - "443:443"
+      - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/certs:/etc/nginx/certs
-      - ./static:/static
+      - static_volume:/app/staticfiles
       - ./media:/media
       - uwsgi-socket:/tmp/uwsgi
     depends_on:
@@ -62,3 +62,4 @@ services:
 volumes:
   uwsgi-socket:
   redis-data:
+  static_volume:

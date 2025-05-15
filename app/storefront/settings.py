@@ -12,6 +12,11 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 SECRET_KEY = 'your-secret-key'
 DEBUG = os.environ.get('DEBUG', "True"),
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '.ngrok-free.app', 'storefront.local']
+CSRF_TRUSTED_ORIGINS = [
+    "https://127.0.0.1",
+    "https://storefront.local",  
+    "http://127.0.0.1",
+    "http://storefront.local",]
 
 TIME_ZONE = 'Europe/Moscow'
 USE_TZ = True
@@ -84,6 +89,7 @@ DATABASES = {
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # результат collectstatic
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR, "static"),
 ]

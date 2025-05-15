@@ -56,3 +56,11 @@ celery -A storefront beat --loglevel=info
 celery -A storefront worker --loglevel=info
 
 source .venv/bin/activate
+
+
+openssl req -x509 -nodes -days 3065 \
+  -newkey rsa:2048 \
+  -keyout nginx/certs/selfsigned.key \
+  -out nginx/certs/selfsigned.crt \
+  -config nginx/openssl.cnf \
+  -extensions req_ext
