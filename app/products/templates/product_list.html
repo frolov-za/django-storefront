@@ -1,20 +1,21 @@
 {% load static %}
+{% load pwa %}
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    {% progressive_web_app_meta %}
     <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
-    <meta name="apple-mobile-web-app-title" content="StoreFront">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>StoreFront</title>
 </head>
+<body>
 <header>
     <button class="refresh-button" onclick="forceReload()">♻️</button>
     <a href="/dashboard" class="dashboard-button">📋</a>
-    <a href="/admin"><img src="static/img/gastonom-logo.png" width="750" height="55" alt="gastonom-logo"></a>
+    <a href="/admin"><img src="{% static 'img/gastonom-logo.png' %}" width="750" height="55" alt="gastonom-logo"></a>
 </header>
-<body>
     <div class="grid"> 
         {% for product in products %}
             <div class="card" data-id="{{ product.id }}" data-name="{{ product.name }}" data-description="{{ product.description }}" data-barcode="{{ product.barcode }}" data-barcode15="{{ product.barcode15 }}">

@@ -1,6 +1,7 @@
 services:
   web:
     build: ./app
+    container_name: django-web
     volumes:
       - ./data:/app/data
       - static_volume:/app/staticfiles
@@ -17,6 +18,7 @@ services:
 
   celery_beat:
     build: ./app
+    container_name: django-celery_beat
     volumes:
       - ./data:/app/data
     command: ["celery", "-A", "storefront", "beat", "--loglevel=info"]
@@ -27,6 +29,7 @@ services:
       - redis
 
   celery_worker:
+    container_name: django-celery_worker
     build: ./app
     volumes:
       - ./data:/app/data
@@ -49,6 +52,7 @@ services:
 
   nginx:
     image: nginx:alpine
+    container_name: nginx
     ports:
       - "443:443"
       - "80:80"

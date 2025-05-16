@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include('products.urls')),
     path('labels/', include('label_printer.urls')),
     path('', include('label_printer.urls')),
+    path('', include('pwa.urls')),
 ]
 
 if settings.DEBUG:

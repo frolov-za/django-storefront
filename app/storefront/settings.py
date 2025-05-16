@@ -11,12 +11,13 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 SECRET_KEY = 'your-secret-key'
 DEBUG = os.environ.get('DEBUG', "True"),
-ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '.ngrok-free.app', 'storefront.local']
+ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '.ngrok-free.app', 'storefront.local', 'storefront.netbird.cloud']
 CSRF_TRUSTED_ORIGINS = [
     "https://127.0.0.1",
     "https://storefront.local",  
     "http://127.0.0.1",
-    "http://storefront.local",]
+    "http://storefront.local",
+    "storefront.netbird.cloud",]
 
 TIME_ZONE = 'Europe/Moscow'
 USE_TZ = True
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
 ]
 
+#PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
 PWA_APP_NAME = 'StoreFront'
 PWA_APP_DESCRIPTION = "StoreFront печать этикеток"
 PWA_APP_THEME_COLOR = '#0A0302'
@@ -46,10 +48,21 @@ PWA_APP_DISPLAY = 'standalone'
 PWA_APP_SCOPE = '/'
 PWA_APP_ORIENTATION = 'any'
 PWA_APP_START_URL = '/'
+PWA_APP_LANG = 'ru-RU'
 PWA_APP_ICONS = [
     {
-        'src': 'static/img/apple-touch-icon.png',
+        'src': '/static/img/img/logo-160x160.png',
         'sizes': '160x160'
+    },
+    {
+        'src': '/static/img/img/logo-512x512.png',
+        'sizes': '512x512'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/img/img/logo-512x512.png',
+        'sizes': '512x512'
     }
 ]
 

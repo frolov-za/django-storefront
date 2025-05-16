@@ -19,4 +19,6 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = storefront.local
 DNS.2 = *.raspberry.local
+DNS.3 = storefront.netbird.cloud
+
 
