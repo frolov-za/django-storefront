@@ -17,7 +17,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://storefront.local",  
     "http://127.0.0.1",
     "http://storefront.local",
-    "storefront.netbird.cloud",]
+    "https://storefront.netbird.cloud",]
 
 TIME_ZONE = 'Europe/Moscow'
 USE_TZ = True

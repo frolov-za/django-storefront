@@ -67,19 +67,18 @@ def print_label(request):
         if not product:
             return JsonResponse({'success': False, 'error': 'Продукт не найден'}, status=404)
         
-        # Создаем запись в логе
-        LabelPrintLog.objects.create(
-            product_name=product.name,
-            barcode=barcode,
-            volume='1.5' if product.barcode15 == barcode else '1'
-        )
-        
         printer = Printer.get_first_active()
         if not printer or not printer.label_template:
             return JsonResponse({'success': False, 'error': 'Принтер не настроен'}, status=400)
 
         zpl_data = generate_zpl(product_name, barcode, printer.label_template)
         if send_zpl_to_printer(zpl_data, printer):
+                    # Создаем запись в логе
+            LabelPrintLog.objects.create(
+                product_name=product.name,
+                barcode=barcode,
+                volume='1.5' if product.barcode15 == barcode else '1'
+            )
             return JsonResponse({'success': True})
             
         return JsonResponse({'success': False, 'error': 'Ошибка печати'}, status=500)
