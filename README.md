@@ -1,6 +1,6 @@
 
 ---
-# StoreFront
+# StoreFront - каталог товаров и печать этикеток
 
 <div align="center"> <img src="docs/img/1.jpg" alt="Основной экран" width="750" /> </div>  
 
