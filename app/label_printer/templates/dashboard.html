@@ -1,132 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+    <title>Статистика</title>
+</head>
 <body>
     <a href="/" class="back-button">⬅️</a>
-    <h1>Статистика продаж напитков</h1>
-    
-    <!-- Общая статистика -->
-    <div class="summary">
-        <h2>За последние 24 часа: {{ daily_total|floatformat:2 }} л</h2>
-        <h2>За последние 7 дней: {{ weekly_total|floatformat:2 }} л</h2>
-    </div>
+    <div class="content-wrapper">
+        <div class="container">
+            <h1>Статистика продаж напитков</h1>
+            
+            <!-- Общая статистика -->
+            <div class="summary">
+                <h2>За последние 24 часа: {{ daily_total|floatformat:2 }} л</h2>
+                <h2>За последние 7 дней: {{ weekly_total|floatformat:2 }} л</h2>
+            </div>
 
-    <!-- Навигационные вкладки -->
-    <div class="tabs">
-        <button class="tablink active" onclick="openTab(event, 'daily-products')">День</button>
-        <button class="tablink" onclick="openTab(event, 'weekly-products')">Неделя</button>
-        <button class="tablink" onclick="openTab(event, 'daily-breakdown')">По дням</button>
-        <button class="tablink" onclick="openTab(event, 'custom-date')">Кастомная дата</button>
-    </div>
+            <!-- Навигационные вкладки -->
+            <div class="tabs">
+                <button class="tablink active" onclick="openTab(event, 'daily-products')">День</button>
+                <button class="tablink" onclick="openTab(event, 'weekly-products')">Неделя</button>
+                <button class="tablink" onclick="openTab(event, 'daily-breakdown')">По дням</button>
+                <button class="tablink" onclick="openTab(event, 'custom-date')">Кастомная дата</button>
+            </div>
 
-    <!-- Контент вкладок -->
-    <div id="daily-products" class="tabcontent" style="display: block;">
-        <h3>Продажи за день по напиткам:</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Напиток</th>
-                    <th>Объем (л)</th>
-                    <th>Этикеток</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in daily_by_product %}
-                <tr>
-                    <td>{{ product.product_name }}</td>
-                    <td>{{ product.total|floatformat:2 }}</td>
-                    <td>{{ product.count }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div id="weekly-products" class="tabcontent">
-        <h3>Продажи за неделю по напиткам:</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Напиток</th>
-                    <th>Объем (л)</th>
-                    <th>Этикеток</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in weekly_by_product %}
-                <tr>
-                    <td>{{ product.product_name }}</td>
-                    <td>{{ product.total|floatformat:2 }}</td>
-                    <td>{{ product.count }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div id="daily-breakdown" class="tabcontent">
-        <h3>Ежедневная статистика:</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Дата</th>
-                    <th>Объем (л)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for day in daily_breakdown %}
-                <tr>
-                    <td>{{ day.date }}</td>
-                    <td>{{ day.total|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div id="custom-date" class="tabcontent">
-        <div class="custom-date-section">
-            <h3>Статистика за произвольный период</h3>
-            <form method="get" action="." id="date-range-form">
-                <div class="date-range-picker">
-                    <input type="date" name="start_date" 
-                         value="{{ start_date|default:'' }}" 
-                         max="{{ timezone.now|date:'Y-m-d' }}"
-                         required>
-                    <span>по</span>
-                    <input type="date" name="end_date" 
-                         value="{{ end_date|default:'' }}" 
-                         max="{{ timezone.now|date:'Y-m-d' }}"
-                         required>
-                </div>
-                <input type="hidden" name="tab" value="custom-date">
-                <button type="submit">Показать</button>
-            </form>
-        
-            {% if date_stats %}        <div class="date-stats">
-                <h4>За период с {{ start_date }} по {{ end_date }}:</h4>
-                <p>Общий объем: {{ date_stats.total_volume|default:0|floatformat:2 }} л</p>
-                <p>Всего этикеток: {{ date_stats.total_labels|default:0 }}</p>
-                
+            <!-- Контент вкладок -->
+            <div id="daily-products" class="tabcontent" style="display: block;">
+                <h3>Продажи за день по напиткам:</h3>
                 <table>
                     <thead>
                         <tr>
                             <th>Напиток</th>
-                            <th>Объем</th>
+                            <th>Объем (л)</th>
                             <th>Этикеток</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for product in date_by_product %}
+                        {% for product in daily_by_product %}
                         <tr>
                             <td>{{ product.product_name }}</td>
-                            <td>{{ product.total|floatformat:2 }} л</td>
+                            <td>{{ product.total|floatformat:2 }}</td>
                             <td>{{ product.count }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            {% endif %}
+
+            <div id="weekly-products" class="tabcontent">
+                <h3>Продажи за неделю по напиткам:</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Напиток</th>
+                            <th>Объем (л)</th>
+                            <th>Этикеток</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in weekly_by_product %}
+                        <tr>
+                            <td>{{ product.product_name }}</td>
+                            <td>{{ product.total|floatformat:2 }}</td>
+                            <td>{{ product.count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="daily-breakdown" class="tabcontent">
+                <h3>Ежедневная статистика:</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Объем (л)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in daily_breakdown %}
+                        <tr>
+                            <td>{{ day.date }}</td>
+                            <td>{{ day.total|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="custom-date" class="tabcontent">
+                <div class="custom-date-section">
+                    <h3>Статистика за произвольный период</h3>
+                    <form method="get" action="." id="date-range-form">
+                        <div class="date-range-picker">
+                            <input type="date" name="start_date" 
+                                value="{{ start_date|default:'' }}" 
+                                max="{{ timezone.now|date:'Y-m-d' }}"
+                                required>
+                            <span>по</span>
+                            <input type="date" name="end_date" 
+                                value="{{ end_date|default:'' }}" 
+                                max="{{ timezone.now|date:'Y-m-d' }}"
+                                required>
+                        </div>
+                        <input type="hidden" name="tab" value="custom-date">
+                        <button type="submit">Показать</button>
+                    </form>
+                
+                    {% if date_stats %}        <div class="date-stats">
+                        <h4>За период с {{ start_date }} по {{ end_date }}:</h4>
+                        <p>Общий объем: {{ date_stats.total_volume|default:0|floatformat:2 }} л</p>
+                        <p>Всего этикеток: {{ date_stats.total_labels|default:0 }}</p>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Напиток</th>
+                                    <th>Объем</th>
+                                    <th>Этикеток</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in date_by_product %}
+                                <tr>
+                                    <td>{{ product.product_name }}</td>
+                                    <td>{{ product.total|floatformat:2 }} л</td>
+                                    <td>{{ product.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            </div>
         </div>
-    </div>
     </div>
 
     <style>
@@ -168,10 +180,32 @@
             padding: 20px;
             border: 1px solid #444;
             border-top: none;
+            border-radius: 16px;
             background-color: #1e1e1e;
             animation: fadeEffect 0.5s;
         }
         
+        .container {
+            background-color: #1b1b1b;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+            border: 1px solid #333;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            overflow-x: auto;
+        }
+
+        .content-wrapper {
+            padding-top: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 15px;
+            padding-right: 15px;
+            box-sizing: border-box;
+        }
+
         @keyframes fadeEffect {
             from {opacity: 0;}
             to {opacity: 1;}
@@ -235,8 +269,8 @@
         /* Кнопка Назад фиксирована сверху слева */
         .back-button {
             position: fixed;
-            top: 10px;
-            right: 30px;
+            top: 20px;
+            left: 20px;
             padding: 10px 20px;
             background: #1b1b1b;
             color: white;
@@ -251,13 +285,6 @@
         .back-button:hover {
             background: #2e2e2e;
             transform: scale(1.05);
-        }
-
-        /* Отступ у контента, чтобы не попадал под кнопку */
-        .content-wrapper {
-            padding-top: 50px; /* Высота кнопки + отступ сверху */
-            max-width: 1000px;
-            margin: 0 auto;
         }
     </style>
 

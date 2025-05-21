@@ -18,67 +18,68 @@ header {
     padding: 0 20px; /* Добавляем отступы по бокам */
 }
 
-/* Стили для логотипа */
-header a {
-    margin: 0 auto; /* Центрируем логотип */
+header {
+    position: relative;
+    height: 70px;
+    background: #000000; /* ваш цвет */
 }
 
-/* Стили для кнопки обновления страницы */
-.refresh-button {
-    position: absolute; /* Абсолютное позиционирование */
-    left: 20px; /* Отступ слева */
-    top: 50%; /* Центрирование по вертикали */
-    transform: translateY(-50%); /* Точное выравнивание */
-    padding: 12px 24px;
-    background: #1b1b1b;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    z-index: 1; /* Кнопка поверх других элементов */
-}
-
-.refresh-button:hover {
-    background: #2e2e2e;
-    transform: translateY(-50%) scale(1.05); /* Сохраняем вертикальное центрирование */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.refresh-button:active {
-    transform: translateY(-50%) scale(1);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-/* Стили для кнопки обновления страницы */
-.dashboard-button {
+/* Левая и правая группы */
+.button-group-left,
+.button-group-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     position: absolute;
-    right: 30px; /* Изменили left на right */
     top: 50%;
     transform: translateY(-50%);
-    padding: 12px 24px;
+}
+
+.button-group-left {
+    left: 20px;
+}
+
+.button-group-right {
+    right: 20px;
+}
+
+/* Кнопки */
+.button {
+    padding: 12px 18px;
     background: #1b1b1b;
     color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 24px;
     transition: all 0.3s;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 
-.dashboard-button:hover {
+.button:hover {
     background: #2e2e2e;
-    transform: translateY(-50%) scale(1.05); /* Сохраняем вертикальное выравнивание */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: scale(1.05);
 }
 
-.dashboard-button:active {
-    transform: translateY(-50%) scale(1);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+.button:active {
+    transform: scale(1);
+}
+
+/* Логотип по центру */
+.logo-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.logo-center img {
+    height: 65px;
+    width: auto;
 }
 
 /* Сетка карточек */
@@ -119,7 +120,7 @@ header a {
     display: none;
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 5;
+    z-index: 999;
 }
 
 /* Модальное окно */
@@ -131,18 +132,19 @@ header a {
     transform: translate(-50%, -50%) scale(0.9);
     opacity: 0;
     transition: all 0.3s ease;
-    z-index: 10;
+    z-index: 1000;
     background: #fff;
     border-radius: 20px;
     width: 1000px;
     height: 500px;
     max-width: 90%;
-    display: flex;
     flex-direction: row;
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
+
 .modal.show {
+    display: flex; /* ← теперь появляется только при show */
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
 }

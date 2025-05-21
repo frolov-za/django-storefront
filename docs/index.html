@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Документация — StoreFront</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">🆂 StoreFront Документация</div>
+    <button id="theme-toggle">🌓</button>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <nav>
+        <ul>
+          <li><a href="index.html">Введение</a></li>
+          <li><a href="install.html">Установка</a></li>
+          <li><a href="items_update.html">Создание и обновление товаров</a></li>
+          <li><a href="#">API</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Введение</h1>
+<hr>
+<div align="center"> <img src="/docs/img/1.jpg" alt="Основной экран" width="750" /> </div>  
+<h3 id="%D0%BE%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D0%B5">Описание</h3>
+<p>StoreFront — это сервис, разработанный на Django, предназначенный для автоматизации продаж разливных напитков в небольших торговых точках и отделах супермаркетов.</p>
+<p>Приложение может работать как Web-сервис или устанавливаться на Android и iOS в формате PWA (Progressive Web App).</p>
+<p>Система позволяет гибко настраивать витрину товаров, добавлять описания для информирования продавцов, учитывать продажи и автоматически отправлять статистику в Telegram.</p>
+<p>Решение ориентировано на небольшие торговые точки.
+Интуитивно понятный интерфейс товароведа облегчает управление каталогом, а администраторский интерфейс позволяет настраивать принтеры и шаблоны этикеток без участия IT-специалистов.</p>
+<blockquote>
+<p><strong>P.S.</strong> Решение разработано под конкретные задачи одной торговой точки, поэтому избыточные функции кастомизации не закладывались изначально.</p>
+</blockquote>
+<hr>
+<h3 id="%D1%81%D0%BA%D1%80%D0%B8%D0%BD%D1%88%D0%BE%D1%82%D1%8B">Скриншоты</h3>
+<div align="center"> <img src="/docs/img/modal_form.png" alt="Статистика" width="750" /> </div>   
+<div align="center"> <img src="/docs/img/stats.png" alt="Статистика" width="750" /> </div> 
+<hr>
+<h3 id="%D0%BE%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D1%8F-%D0%B8-%D1%82%D1%80%D0%B5%D0%B1%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F">Ограничения и требования</h3>
+<ul>
+<li>Поддерживаются только два объёма товара — 1 и 1,5 литра (вся логика построена вокруг этого ограничения).</li>
+<li>Интерфейс предельно простой, без излишней функциональности.</li>
+<li>В качестве сервера может использоваться любой хост; продакшн-версия работает на Raspberry Pi 3B.</li>
+<li>Windows не поддерживает автоматическое определение USB-принтеров.</li>
+<li>Обязательное наличие Docker и Docker Compose.</li>
+</ul>
+<hr>
+<h2 id="%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%BD%D0%BE%D0%B9-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB">Основной функционал</h2>
+<ul>
+<li>Гибкая настройка витрины с описанием товаров.</li>
+<li>Генерация ZPL-этикеток и отправка их на принтер.</li>
+<li>Поддержка кириллицы для принтеров без встроенных кириллических шрифтов (с использованием Pillow).</li>
+<li>Работа с сетевыми и USB ZPL-принтерами.</li>
+<li>Индивидуальная настройка размера и положения этикеток для каждого принтера.</li>
+<li>Предпросмотр этикеток в административной панели.</li>
+<li>Ролевая модель доступа (администратор / товаровед).</li>
+<li>Автоматическое определение USB-принтеров.</li>
+<li>Автоматическое создание резервных копий через Celery и отправка в Telegram.</li>
+<li>Гибкая статистика с диапазоном дат и ежедневной отправкой в Telegram.</li>
+<li>Очистка базы данных от устаревших записей (старше 90 дней).</li>
+<li>Преднастроенный конфигурационный файл Nginx с поддержкой HTTPS и кеширования (необходимо для PWA).</li>
+<li>Инструменты для генерации самоподписанных SSL-сертификатов.</li>
+<li>Поддержка запуска на x86 и ARM (включая Raspberry Pi) через Docker Compose.</li>
+<li>Адаптивная вёрстка для работы на мобильных устройствах и ПК.</li>
+<li>Автоматическая оптимизация изображений товаров (сжатие и кадрирование).</li>
+<li>Удаление неиспользуемых изображений из системы.</li>
+<li>Поддержка локального домена <code>.local</code> и сертификатов для локальных сетей без настроенного DNS (с использованием mDNS).</li>
+<li>Отображение ошибок печати на клиентской стороне.</li>
+<li>Подробные инструкции для персонала в формате PDF.</li>
+<li>Предустановленные пользовательские профили и заполненный каталог товаров.</li>
+<li>Возможность создания дискового образа Raspberry Pi с предустановленным NetBird для удалённого администрирования по SSH (с отдельной инструкцией).</li>
+      </div>
+    </main>
+  </div>
+
+<script>
+  const toggleButton = document.getElementById("theme-toggle");
+
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-theme");
+  } else if (!savedTheme) {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (prefersDark) {
+      document.body.classList.add("dark-theme");
+    }
+  }
+
+  toggleButton.addEventListener("click", () => {
+    document.body.classList.toggle("dark-theme");
+    const isDark = document.body.classList.contains("dark-theme");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+</script>
+</body>
+</html>

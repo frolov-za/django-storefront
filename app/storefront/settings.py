@@ -39,6 +39,15 @@ INSTALLED_APPS = [
     'django_celery_beat',
 ]
 
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # результат collectstatic
+STATICFILES_DIRS = [
+   os.path.join(BASE_DIR, "static"),
+]
+
+
 #PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
 PWA_APP_NAME = 'StoreFront'
 PWA_APP_DESCRIPTION = "StoreFront печать этикеток"
@@ -51,17 +60,17 @@ PWA_APP_START_URL = '/'
 PWA_APP_LANG = 'ru-RU'
 PWA_APP_ICONS = [
     {
-        'src': '/static/img/img/logo-160x160.png',
+        'src': STATIC_URL + 'img/logo-160x160.png',
         'sizes': '160x160'
     },
     {
-        'src': '/static/img/img/logo-512x512.png',
+        'src': STATIC_URL + 'img/logo-512x512.png',
         'sizes': '512x512'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': '/static/img/img/logo-512x512.png',
+        'src': STATIC_URL + 'img/logo-512x512.png',
         'sizes': '512x512'
     }
 ]
@@ -100,14 +109,6 @@ DATABASES = {
         'NAME': os.environ.get('SQLITE_PATH', "db.sqlite3"),
     }
 }
-
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # результат collectstatic
-STATICFILES_DIRS = [
-   os.path.join(BASE_DIR, "static"),
-]
 
 ALLOWED_SHELL_COMMANDS = ['ls /dev/usb/lp*']
 

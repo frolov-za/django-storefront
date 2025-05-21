@@ -59,8 +59,9 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/certs:/etc/nginx/certs
-      - static_volume:/app/staticfiles
       - ./media:/media
+      - ./docs:/docs
+      - static_volume:/app/staticfiles
       - uwsgi-socket:/tmp/uwsgi
     restart: unless-stopped
     depends_on:

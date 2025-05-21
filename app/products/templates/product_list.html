@@ -12,9 +12,18 @@
 </head>
 <body>
 <header>
-    <button class="refresh-button" onclick="forceReload()">♻️</button>
-    <a href="/dashboard" class="dashboard-button">📋</a>
-    <a href="/admin"><img src="{% static 'img/gastonom-logo.png' %}" width="750" height="55" alt="gastonom-logo"></a>
+    <div class="logo-center">
+        <a href="/admin">
+            <img src="{% static 'img/gastonom-logo.jpg' %}" alt="gastonom-logo">
+        </a>
+    </div>
+    <div class="button-group-left">
+        <button class="button" onclick="forceReload()">♻️</button>
+    </div>
+    <div class="button-group-right">
+        <a href="/dashboard" target="_blank" class="button">📋</a >
+        <a href="/docs/index.html" target="_blank" class="button">ⓘ</a>
+    </div>
 </header>
     <div class="grid"> 
         {% for product in products %}
