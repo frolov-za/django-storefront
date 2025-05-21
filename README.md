@@ -149,6 +149,22 @@ openssl genrsa -out nginx/certs/selfsigned.key 2048
 openssl req -new -x509 -key nginx/certs/selfsigned.key -out nginx/certs/selfsigned.crt -days 365 -subj "/CN=storefront.local"
 ```
 
+Для генерации сертификата можно использовать утилиту `mkcert`
+
+```bash
+mkcert -key-file key.pem -cert-file cert.pem storefront.netbird.cloud raspberry.local raspberry.local storefront.local
+```
+
+На IOS необходимо отправить rootCA.pem, получить можно командой
+
+```bash
+mkcert -CAROOT
+```
+
+Для удобства установки корневого сертификата на клиентские устройства переместите файл rootCA.pem в папку docs
+
+Загрузить сертификат на устройство можно перейдя по ссылке https://<hostname>/docs/cacerts/rootCA.pem
+
 Запуск сервиса:
 
 ```bash
