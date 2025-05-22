@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Документация — StoreFront</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">🆂 StoreFront Документация</div>
+    <button id="theme-toggle">🌓</button>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <nav>
+        <ul>
+          <li><a href="index.html">Введение</a></li>
+          <li><a href="install.html">Установка</a></li>
+          <li><a href="items_update.html">Создание и обновление товаров</a></li>
+          <li><a href="install_cert_win.html">Установка доверенного сертификата Windows</a></li>
+          <li><a href="install_cert_ios.html">Установка доверенного сертификата IOS</a></li>          
+          <li><a href="cacerts/rootCA.pem">Загрузить сертификаты на устройство</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="content">
+  <h1>Установка самоподписного SSL-сертификата на iOS</h1>
+
+  <div class="step">
+    <h2>Шаг 1: Загрузка сертификата на устройство</h2>
+    <p>Загрузите файл <a href="cacerts/rootCA.pem" download>сертификата</a> на устройство, сохраните в загрузки.</p>
+  </div>
+
+  <div class="step">
+    <h2>Шаг 2: Установка профиля</h2>
+    <p>Откройте приложение "Файлы", выберите недавние и найдите загруженный файл сертификата</p>
+    <p>Откройте файл сертификата на iPhone/iPad — система предложит установить профиль.</p>
+    <p>Нажмите <strong>Разрешить</strong>, а затем перейдите в <strong>Настройки → Основные → Профиль</strong> (или <strong>Профили и управление устройством</strong>).</p>
+    <p>Нажмите на имя сертификата и выберите <strong>Установить</strong>. Подтвердите установку, если потребуется ввести код-пароль.</p>
+  </div>
+
+  <div class="step">
+    <h2>Шаг 3: Доверие сертификату</h2>
+    <p>После установки профиля перейдите в <strong>Настройки → Основные → О сертификате</strong> или <strong>Настройки → Основные → Информация → Настройки доверия сертификатам</strong>.</p>
+    <p>Включите переключатель <strong>Доверять</strong> для вашего сертификата.</p>
+  </div>
+
+  <div class="step">
+    <h2>Шаг 4: Проверка</h2>
+    <p>Откройте Safari или нужное приложение и проверьте доступ к ресурсу через HTTPS. Предупреждений о недоверенном сертификате быть не должно.</p>
+  </div>
+
+  <div class="step">
+    <h2>Примечания</h2>
+    <ul>
+      <li>iOS может кэшировать настройки. Иногда требуется перезагрузка устройства.</li>
+      <li>Для HTTPS-соединений через Wi-Fi убедитесь, что прокси/фильтры (если есть) также доверяют сертификату.</li>
+    </ul>
+  </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+  const toggleButton = document.getElementById("theme-toggle");
+
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-theme");
+  } else if (!savedTheme) {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (prefersDark) {
+      document.body.classList.add("dark-theme");
+    }
+  }
+
+  toggleButton.addEventListener("click", () => {
+    document.body.classList.toggle("dark-theme");
+    const isDark = document.body.classList.contains("dark-theme");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+</script>
+</body>
+</html>

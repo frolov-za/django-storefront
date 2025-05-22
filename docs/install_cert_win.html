@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Документация — StoreFront</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">🆂 StoreFront Документация</div>
+    <button id="theme-toggle">🌓</button>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <nav>
+        <ul>
+          <li><a href="index.html">Введение</a></li>
+          <li><a href="install.html">Установка</a></li>
+          <li><a href="items_update.html">Создание и обновление товаров</a></li>
+          <li><a href="install_cert_win.html">Установка доверенного сертификата Windows</a></li>
+          <li><a href="install_cert_ios.html">Установка доверенного сертификата IOS</a></li>          
+          <li><a href="cacerts/rootCA.pem">Загрузить сертификаты на устройство</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="content">
+  <h1>Установка самоподписного SSL-сертификата на Windows</h1>
+
+  <div class="step">
+    <h2>Шаг 1: Загрузка сертификата на устройство</h2>
+    <p>Загрузите файл <a href="cacerts/rootCA.pem" download>сертификата</a> на устройство, сохраните в загрузки.</p>
+  </div>
+
+  <div class="step">
+    <h2>Шаг 2: Открытие "Управления сертификатами"</h2>
+    <p>Нажмите <strong>Win + R</strong>, введите <code>mmc</code> и нажмите Enter.</p>
+    <p>В консоли выберите <strong>Файл → Добавить или удалить оснастку (Add/Remove Snap-in)</strong>.</p>
+    <p>Добавьте <strong>Сертификаты (Certificates)</strong> для <strong>Компьютера (Computer account)</strong>.</p>
+  </div>
+
+  <div class="step">
+    <h2>Шаг 3: Установка сертификата</h2>
+    <p>В дереве оснастки перейдите в <strong>Сертификаты (локальный компьютер) → Доверенные корневые центры сертификации → Сертификаты</strong>.</p>
+    <p>Кликните правой кнопкой мыши → <strong>Все задачи → Импорт</strong>.</p>
+    <p>Выберите файл <code>.crt</code> и завершите мастер импорта.</p>
+  </div>
+
+  <div class="step">
+    <h2>Шаг 4: Перезапуск браузеров и приложений</h2>
+    <p>После установки сертификата перезапустите браузеры и другие приложения, чтобы изменения вступили в силу.</p>
+  </div>
+
+  <div class="step">
+    <h2>Примечание</h2>
+    <p>Если вы используете браузер Firefox, его хранилище сертификатов отдельное — установите сертификат вручную через <code>Настройки → Приватность и безопасность → Сертификаты</code>.</p>
+  </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+  const toggleButton = document.getElementById("theme-toggle");
+
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-theme");
+  } else if (!savedTheme) {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (prefersDark) {
+      document.body.classList.add("dark-theme");
+    }
+  }
+
+  toggleButton.addEventListener("click", () => {
+    document.body.classList.toggle("dark-theme");
+    const isDark = document.body.classList.contains("dark-theme");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+</script>
+</body>
+</html>

@@ -22,6 +22,13 @@ body {
   color: var(--fg);
 }
 
+.step {
+  padding: 15px;
+  margin-bottom: 15px;
+  border-left: 4px solid #0066cc;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 a {
   color: var(--link);
   text-decoration: none;
@@ -87,6 +94,7 @@ a:hover {
 .content h1 {
   margin-top: 0;
 }
+
 
 /* Responsive (мобильные устройства) */
 @media (max-width: 768px) {
