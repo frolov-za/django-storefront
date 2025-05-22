@@ -48,13 +48,13 @@ def generate_zpl(product_name, barcode, template):
     #date_x = width - 50
     date_code = f'^FO{template.date_position}^FB100,7,0,C^A0B,{template.date_font_size},{template.date_font_size}^FD{date_str}^FS'
  
-    return f"""
-    ^XA
-    ^LL{height}
-    ^PW{width}
-    {barcode_code}
-    {"" if template.product_name_via_pillow else font}
-    {product_name_code_pil if template.product_name_via_pillow else product_name_code}
-    {date_code}
-    ^XZ
-    """.strip()
+    return "\n".join(line for line in [
+        "^XA",
+        f"^LL{height}",
+        f"^PW{width}",
+        barcode_code,
+        "" if template.product_name_via_pillow else font,
+        product_name_code_pil if template.product_name_via_pillow else product_name_code,
+        date_code,
+        "^XZ"
+    ] if line.strip())
