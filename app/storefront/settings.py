@@ -9,6 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
+TOGETHER_API_KEY = os.getenv('TOGETHER_API_KEY')
+
 SECRET_KEY = 'your-secret-key'
 DEBUG = os.environ.get('DEBUG', "True"),
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '.ngrok-free.app', 'storefront.local', 'storefront.netbird.cloud']
