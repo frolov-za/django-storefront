@@ -3,41 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>ZPL Diagnostics</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 2rem;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-        th, td {
-            padding: 8px;
-            border: 1px solid #ccc;
-        }
-
-        th {
-            background-color: #f0f0f0;
-            text-align: left;
-        }
-
-        pre {
-            background: #f8f8f8;
-            padding: 1rem;
-            overflow-x: auto;
-        }
-
-        .error {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
+    <div class="content-wrapper">
+        <div class="container">
     <h2>Диагностика принтера: {{ printer.name }}</h2>
 
     {% if data %}
@@ -67,5 +36,218 @@
     {% else %}
         <p>Данные не получены.</p>
     {% endif %}
+        </div>
+    </div>
+        <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        .tabs {
+            margin: 20px 0;
+            border-bottom: 1px solid #444;
+        }
+        
+        .tablink {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 4px 4px 0 0;
+            margin-right: 4px;
+        }
+        
+        .tablink:hover {
+            background-color: #3d3d3d;
+        }
+        
+        .tablink.active {
+            background-color: #388E3C; /* Более темный оттенок зеленого */
+            color: white;
+            position: relative;
+            top: 1px;
+        }
+        
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #444;
+            border-top: none;
+            border-radius: 16px;
+            background-color: #1e1e1e;
+            animation: fadeEffect 0.5s;
+        }
+        
+        .container {
+            background-color: #1b1b1b;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+            border: 1px solid #333;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            overflow-x: auto;
+        }
+
+        .content-wrapper {
+            padding-top: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 15px;
+            padding-right: 15px;
+            box-sizing: border-box;
+        }
+
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        
+        th {
+            background-color: #388E3C; /* Более темный оттенок зеленого */
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #2d2d2d;
+        }
+    
+        .custom-date-section form {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .custom-date-section input[type="date"] {
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+        }
+        
+        .date-range-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .date-range-picker span {
+            color: #aaa;
+        }
+        
+        .date-range-picker input[type="date"] {
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            width: 180px;
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+        }
+        /* Кнопка Назад фиксирована сверху слева */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #1b1b1b;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .back-button:hover {
+            background: #2e2e2e;
+            transform: scale(1.05);
+        }
+    </style>
+
+<script>
+    function openTab(evt, tabName) {
+        let tabcontent = document.getElementsByClassName("tabcontent");
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        
+        let tablinks = document.getElementsByClassName("tablink");
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add("active");
+        
+        // Сохраняем выбранную вкладку в localStorage
+        localStorage.setItem('activeTab', tabName);
+    }
+
+    // Восстанавливаем активную вкладку при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        let activeTab = localStorage.getItem('activeTab');
+        
+        // Если есть сохраненная вкладка - активируем ее
+        if (activeTab) {
+            const tabButton = Array.from(document.getElementsByClassName('tablink'))
+                .find(button => button.getAttribute('onclick').includes(activeTab));
+            
+            if (tabButton) {
+                tabButton.click();
+            } else {
+                document.querySelector('.tablink').click();
+            }
+        } else {
+            // По умолчанию активируем первую вкладку
+            document.querySelector('.tablink').click();
+        }
+    });
+
+    // Валидация диапазона дат
+    document.getElementById('date-range-form').addEventListener('submit', function(e) {
+        const startDate = new Date(this.start_date.value);
+        const endDate = new Date(this.end_date.value);
+        
+        if (startDate > endDate) {
+            alert('Дата окончания не может быть раньше даты начала');
+            e.preventDefault();
+        }
+    });
+
+    // Инициализация дат при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const startDateInput = document.querySelector('input[name="start_date"]');
+        const endDateInput = document.querySelector('input[name="end_date"]');
+        
+        if (!startDateInput.value && urlParams.has('start_date')) {
+            startDateInput.value = urlParams.get('start_date');
+        }
+        if (!endDateInput.value && urlParams.has('end_date')) {
+            endDateInput.value = urlParams.get('end_date');
+        }
+    });
+</script>
 </body>
 </html>
