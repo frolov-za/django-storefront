@@ -11,7 +11,7 @@ import logging
 from .models import Printer, LabelPrintLog
 from products.models import Product
 from .utils.zpl_generator import generate_zpl
-from .utils.printer_service import send_zpl_to_printer
+from .utils.printer_service import send_zpl_to_printer, parse_zpl_help_output, get_zpl_diagnostics, parse_zebra_hs_response
 from django.utils.timezone import localtime
 
 
@@ -88,6 +88,44 @@ def print_label(request):
     except Exception as e:
         logger.error(f"Print error: {str(e)}")
         return JsonResponse({'success': False, 'error': 'Внутренняя ошибка сервера'}, status=500)
+
+def zpl_diagnostics_view(request):
+    try:
+        printer = Printer.get_first_active()
+    except Printer.DoesNotExist:
+        return render(request, "printer/error.html", {"error": "Принтер не найден."})
+
+    result = get_zpl_diagnostics(printer)
+
+    # Если произошла ошибка
+    if isinstance(result, dict) and result.get("error"):
+        return render(request, "printer/error.html", {"error": result["error"]})
+
+    # Если получен только сырой ответ (например, ^HH или ~HS)
+    if isinstance(result, dict) and result.get("raw"):
+        raw_output = result["raw"]
+        try:
+            variables = parse_zpl_help_output(raw_output)
+        except Exception as e:
+            return render(request, "printer/error.html", {"error": f"Ошибка разбора данных: {str(e)}"})
+
+        # Объединяем распарсенные переменные и сырой текст
+        data = {**variables, "raw": raw_output}
+        return render(request, "printer/diagnostics.html", {
+            "data": data,
+            "printer": printer,
+        })
+
+    # Если результат уже содержит распарсенные данные (без raw)
+    if isinstance(result, dict):
+        return render(request, "printer/diagnostics.html", {
+            "data": result,
+            "printer": printer,
+        })
+
+    # Если ничего не подошло — неизвестный тип данных
+    return render(request, "printer/error.html", {"error": "Не удалось получить данные от принтера."})
+
 
 def sales_dashboard(request):
     context = {'error_message': None}

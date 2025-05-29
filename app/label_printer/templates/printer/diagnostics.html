@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ZPL Diagnostics</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 2rem;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            text-align: left;
+        }
+
+        pre {
+            background: #f8f8f8;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Диагностика принтера: {{ printer.name }}</h2>
+
+    {% if data %}
+        {% if data.error %}
+            <p class="error">Ошибка: {{ data.error }}</p>
+
+        {% elif data.free_memory_kb %}
+            <table>
+                <tr><th>Параметр</th><th>Значение</th></tr>
+                <tr><td>Свободная память</td><td>{{ data.free_memory_kb }} КБ</td></tr>
+                <tr><td>Температура головки</td><td>{{ data.head_temp }}</td></tr>
+                <tr><td>Лента закончилась</td><td>{{ data.ribbon_out|yesno:"Да,Нет" }}</td></tr>
+                <tr><td>Бумага закончилась</td><td>{{ data.paper_out|yesno:"Да,Нет" }}</td></tr>
+                <tr><td>Принтер перегрет</td><td>{{ data.printhead_overheat|yesno:"Да,Нет" }}</td></tr>
+                <tr><td>Готов к печати</td><td>{{ data.ready|yesno:"Да,Нет" }}</td></tr>
+                <tr><td>Подключен</td><td>{{ data.connected|yesno:"Да,Нет" }}</td></tr>
+                <tr><td>Отпечатано этикеток</td><td>{{ data.total_labels_printed }}</td></tr>
+            </table>
+
+        {% elif data.raw %}
+            <p>Сырой ответ принтера:</p>
+            <pre>{{ data.raw|escape }}</pre>
+
+        {% else %}
+            <p>Нет данных для отображения.</p>
+        {% endif %}
+    {% else %}
+        <p>Данные не получены.</p>
+    {% endif %}
+</body>
+</html>

@@ -21,6 +21,8 @@ services:
     container_name: django-celery_beat
     volumes:
       - ./data:/app/data
+      - static_volume:/app/staticfiles
+      - ./media:/app/media
     command: ["celery", "-A", "storefront", "beat", "--loglevel=info"]
     env_file:
       - .env_docker
@@ -33,6 +35,8 @@ services:
     build: ./app
     volumes:
       - ./data:/app/data
+      - static_volume:/app/staticfiles
+      - ./media:/app/media
     command: ["celery", "-A", "storefront", "worker", "--loglevel=info"]
     env_file:
       - .env_docker
