@@ -12,7 +12,7 @@ from .utils.zpl_to_png import zpl_to_png
 
 @admin.register(Printer)
 class PrinterAdmin(admin.ModelAdmin):
-    list_display = ('name', 'connection_type', 'status_indicator', 'active_status', 'device_info')
+    list_display = ('name', 'label_template', 'connection_type', 'status_indicator', 'active_status', 'device_info')
     list_filter = ('is_active', 'connection_type')
     change_list_template = 'admin/printer_change_list.html'
     fieldsets = (
