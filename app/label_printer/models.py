@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 import subprocess
+import socket
 
 class LabelTemplate(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -52,6 +53,16 @@ class Printer(models.Model):
         elif self.connection_type == 'usb':
             if not self.device_path:
                 raise ValidationError("Для USB-принтера необходимо указать путь к устройству")
+
+    def is_available(self):
+        if self.connection_type != 'network':
+            return None  # Только сетевые проверяем
+
+        try:
+            with socket.create_connection((self.address, self.port), timeout=0.5):
+                return True
+        except (socket.timeout, socket.error):
+            return False
             
     @classmethod
     def find_usb_printers(cls):

@@ -1,3 +1,4 @@
+from django.utils.html import format_html
 from django.contrib import admin
 from django.contrib import messages
 from django.urls import reverse, path
@@ -11,18 +12,16 @@ from .utils.zpl_to_png import zpl_to_png
 
 @admin.register(Printer)
 class PrinterAdmin(admin.ModelAdmin):
-    list_display = ('name', 'connection_type', 'active_status', 'device_info')
+    list_display = ('name', 'connection_type', 'status_indicator', 'active_status', 'device_info')
     list_filter = ('is_active', 'connection_type')
     change_list_template = 'admin/printer_change_list.html'
     fieldsets = (
         (None, {'fields': ('name', 'is_active', 'label_template')}),
         ('Network Settings', {
             'fields': ('address', 'port'),
-            'classes': ('collapse',)
         }),
         ('USB Settings', {
             'fields': ('device_path',),
-            'classes': ('collapse',)
         }),
         ('DPI Settings', {
             'fields': ('printer_dpi',),
@@ -46,6 +45,14 @@ class PrinterAdmin(admin.ModelAdmin):
         extra_context = extra_context or {}
         extra_context['show_find_usb_button'] = True
         return super().changelist_view(request, extra_context=extra_context)
+
+    def status_indicator(self, obj):
+        available = obj.is_available()
+        color = 'gray' if available is None else ('green' if available else 'red')
+        return format_html(
+            '<span style="display: block; text-align: center; color: {};">●</span>', color
+        )         
+    status_indicator.short_description = "Доступен"
 
     def get_urls(self):
         urls = super().get_urls()
