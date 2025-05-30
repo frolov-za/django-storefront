@@ -4,10 +4,11 @@
 <head>
     <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
-    <title>Статистика</title>
+    <title>StoreFront - Статистика</title>
 </head>
 <body>
     <a href="/" class="back-button">⬅️</a>
+    <a href="/printer/diagnostics/" class="diagnostics-button">🛠️</a>
     <div class="content-wrapper">
         <div class="container">
             <h1>Статистика продаж напитков</h1>
@@ -283,6 +284,26 @@
         }
 
         .back-button:hover {
+            background: #2e2e2e;
+            transform: scale(1.05);
+        }
+        /* Кнопка Назад фиксирована сверху слева */
+        .diagnostics-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #1b1b1b;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .diagnostics-button:hover {
             background: #2e2e2e;
             transform: scale(1.05);
         }

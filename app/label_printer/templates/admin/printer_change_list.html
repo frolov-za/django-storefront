@@ -7,6 +7,14 @@
         <a href="{% url 'admin:find_usb_printers' %}" class="button">
             🔍 Найти USB-принтеры
         </a>
+        <a href="/printer/diagnostics/" target="_blank" class="button">
+            🛠️ Диагностика активного принтера
+        </a>
     </li>
+<style>
+.button {
+margin-right: 5px;
+}
+</style>
     {% endif %}
 {% endblock %}

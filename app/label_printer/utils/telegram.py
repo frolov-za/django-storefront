@@ -7,6 +7,7 @@ import logging
 import requests
 from django.conf import settings
 from django.db.models import OuterRef, Subquery
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,7 @@ def send_telegram_message(message):
 
 
 def send_daily_volume_stats():
+    today_tg = datetime.now().strftime('%Y-%m-%d')
     today = timezone.now().date()
     start = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time()))
 
@@ -55,10 +57,9 @@ def send_daily_volume_stats():
     )
 
     if not stats:
-        send_telegram_message("Сегодня не было напечатано ни одной этикетки.")
+        send_telegram_message(f"Сегодня {today_tg} не было напечатано ни одной этикетки.")
         return
-
-    message_lines = ["📊 Статистика за сегодня (в литрах):\n"]
+    message_lines = [f"📊 Статистика за сегодня {today_tg} (в литрах):\n"]
     for row in stats:
         product = row['product_name']
         volume = round(row['volume_sum'] or 0, 2)
