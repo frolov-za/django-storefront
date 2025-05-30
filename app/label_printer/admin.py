@@ -93,7 +93,7 @@ class PrinterAdmin(admin.ModelAdmin):
 
 @admin.register(LabelTemplate)
 class LabelTemplateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'barcode_height', 'date_format')
+    list_display = ('name', 'label_hight', "label_wight" , 'product_name_via_pillow')
     change_form_template = 'admin/labeltemplate.html'
 
     def get_urls(self):
