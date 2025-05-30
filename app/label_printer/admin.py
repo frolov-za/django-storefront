@@ -14,6 +14,7 @@ from .utils.zpl_to_png import zpl_to_png
 class PrinterAdmin(admin.ModelAdmin):
     list_display = ('name', 'label_template', 'connection_type', 'status_indicator', 'active_status', 'device_info')
     list_filter = ('is_active', 'connection_type')
+    actions = ['make_active', 'make_deactive']
     change_list_template = 'admin/printer_change_list.html'
     fieldsets = (
         (None, {'fields': ('name', 'is_active', 'label_template')}),
@@ -89,6 +90,16 @@ class PrinterAdmin(admin.ModelAdmin):
             'admin/found_usb_printers.html',
             context
         )
+    
+    @admin.action(description="Активировать выбранные принтеры")
+    def make_active(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f"Активировано {updated} принтер(ов).", messages.SUCCESS)
+
+    @admin.action(description="Деактивировать выбранные принтеры")
+    def make_deactive(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f"Деактивировано {updated} принтер(ов).", messages.SUCCESS)
 
 
 @admin.register(LabelTemplate)
