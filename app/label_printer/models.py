@@ -90,7 +90,7 @@ class LabelPrintLog(models.Model):
     product_name = models.CharField(max_length=255)
     barcode = models.CharField(max_length=128)
     printed_at = models.DateTimeField(auto_now_add=True, verbose_name='Время печати')
-    volume = models.CharField(max_length=10)
+    volume = models.IntegerField(verbose_name='Объём (мл)')
 
     
 
