@@ -57,6 +57,7 @@ def print_label(request):
         product_name = data.get("product_name")
         barcode = data.get("barcode")
         volume = data.get("volume")  # ожидаем миллилитры (1000, 1500)
+        
 
         if not product_name or not barcode or not volume:
             return JsonResponse(
