@@ -47,8 +47,8 @@
     </div>
     <div class="action-section">
     <h1>Выбор тары</h1>
-    <button onclick="sendPrint(selectedProductBarcode)">1 Литр</button>
-    <button onclick="sendPrint(selectedProductBarcode15)">1,5 Литра</button>
+    <button onclick="sendPrint(selectedProductBarcode, 1000)">1 Литр</button>
+    <button onclick="sendPrint(selectedProductBarcode, 1500)">1,5 Литра</button> <!-- Workaraound пока не работает ЕГАИС, берется баркод для 1л -->
     </div>
 </div>
 
@@ -84,14 +84,18 @@
         }, 300);
     });
     
-    function sendPrint(barcode) {
+    function sendPrint(barcode, volume) {
     fetch('labels/print/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': '{{ csrf_token }}',
         },
-        body: JSON.stringify({ product_name: selectedProductName, barcode: barcode })
+        body: JSON.stringify({
+            product_name: selectedProductName,
+            barcode: barcode,
+            volume: volume 
+        })
     })
     .then(response => response.json().then(json => {
         document.getElementById('overlay').click();

@@ -8,7 +8,8 @@ services:
       - ./media:/app/media
       - uwsgi-socket:/tmp/uwsgi
     command: >
-      sh -c "python manage.py collectstatic --noinput &&
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
              gunicorn storefront.wsgi:application --bind 0.0.0.0:8000"
     expose:
       - 8000

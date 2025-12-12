@@ -1,8 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
     <meta charset="UTF-8">
-    <title>ZPL Diagnostics</title>
+    <title>StoreFront - ZPL Diagnostics</title>
 </head>
 <body>
     <div class="content-wrapper">
@@ -185,69 +188,5 @@
         }
     </style>
 
-<script>
-    function openTab(evt, tabName) {
-        let tabcontent = document.getElementsByClassName("tabcontent");
-        for (let i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-        
-        let tablinks = document.getElementsByClassName("tablink");
-        for (let i = 0; i < tablinks.length; i++) {
-            tablinks[i].classList.remove("active");
-        }
-        
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.classList.add("active");
-        
-        // Сохраняем выбранную вкладку в localStorage
-        localStorage.setItem('activeTab', tabName);
-    }
-
-    // Восстанавливаем активную вкладку при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        let activeTab = localStorage.getItem('activeTab');
-        
-        // Если есть сохраненная вкладка - активируем ее
-        if (activeTab) {
-            const tabButton = Array.from(document.getElementsByClassName('tablink'))
-                .find(button => button.getAttribute('onclick').includes(activeTab));
-            
-            if (tabButton) {
-                tabButton.click();
-            } else {
-                document.querySelector('.tablink').click();
-            }
-        } else {
-            // По умолчанию активируем первую вкладку
-            document.querySelector('.tablink').click();
-        }
-    });
-
-    // Валидация диапазона дат
-    document.getElementById('date-range-form').addEventListener('submit', function(e) {
-        const startDate = new Date(this.start_date.value);
-        const endDate = new Date(this.end_date.value);
-        
-        if (startDate > endDate) {
-            alert('Дата окончания не может быть раньше даты начала');
-            e.preventDefault();
-        }
-    });
-
-    // Инициализация дат при загрузке
-    document.addEventListener('DOMContentLoaded', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const startDateInput = document.querySelector('input[name="start_date"]');
-        const endDateInput = document.querySelector('input[name="end_date"]');
-        
-        if (!startDateInput.value && urlParams.has('start_date')) {
-            startDateInput.value = urlParams.get('start_date');
-        }
-        if (!endDateInput.value && urlParams.has('end_date')) {
-            endDateInput.value = urlParams.get('end_date');
-        }
-    });
-</script>
 </body>
 </html>
