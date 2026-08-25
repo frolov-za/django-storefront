@@ -93,6 +93,100 @@ def print_label(request):
             {"success": False, "error": "Внутренняя ошибка сервера"}, status=500
         )
 
+@require_POST
+def print_custom_product_labels(request):
+    try:
+        data = json.loads(request.body)
+
+        product_name = data.get("product_name")
+        barcode = data.get("barcode")
+        quantity = data.get("quantity")
+
+        if not product_name or barcode is None or quantity is None:
+            return JsonResponse(
+                {"success": False, "error": "Отсутствуют обязательные поля"},
+                status=400,
+            )
+
+        try:
+            barcode = int(barcode)
+            quantity = int(quantity)
+        except (TypeError, ValueError):
+            return JsonResponse(
+                {
+                    "success": False,
+                    "error": "barcode и quantity должны быть числами",
+                },
+                status=400,
+            )
+
+        if quantity <= 0:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "error": "Количество должно быть больше 0",
+                },
+                status=400,
+            )
+
+        # Получаем настроенный принтер
+        printer = Printer.get_first_active()
+
+        if not printer or not printer.label_template:
+            return JsonResponse(
+                {"success": False, "error": "Принтер не настроен"},
+                status=400,
+            )
+
+        # Генерируем одну этикетку
+        zpl_label = generate_zpl(
+            product_name,
+            barcode,
+            printer.label_template,
+        )
+
+        # Формируем нужное количество этикеток
+        zpl_data = zpl_label * quantity
+
+        # Отправляем на настроенный принтер
+        if send_zpl_to_printer(zpl_data, printer):
+            return JsonResponse(
+                {
+                    "success": True,
+                    "quantity": quantity,
+                }
+            )
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Ошибка печати",
+            },
+            status=500,
+        )
+
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Неверный формат данных",
+            },
+            status=400,
+        )
+
+    except Exception as e:
+        logger.exception("Print product labels error")
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Внутренняя ошибка сервера",
+            },
+            status=500,
+        )
+
+def custom_label(request):
+    return render(request, "custom_label.html")
 
 def zpl_diagnostics_view(request):
     try:
