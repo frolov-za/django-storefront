@@ -38,6 +38,7 @@ services:
       - ./data:/app/data
       - static_volume:/app/staticfiles
       - ./media:/app/media
+#      - /mnt/usb:/tmp/backup #For local BackUps 
     command: ["celery", "-A", "storefront", "worker", "--loglevel=info"]
     env_file:
       - .env_docker
