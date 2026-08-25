@@ -31,7 +31,6 @@ def send_daily_volume_stats():
     today = timezone.now().date()
     start = timezone.make_aware(datetime.combine(today, datetime.min.time()))
 
-    # Считаем объём в литрах
     stats = (
         LabelPrintLog.objects
         .filter(printed_at__gte=start)
@@ -45,21 +44,16 @@ def send_daily_volume_stats():
     )
 
     if not stats:
-        send_telegram_message(f"Сегодня {today_tg} не было напечатано ни одной этикетки.")
-        return
+        return f"Сегодня {today_tg} не было напечатано ни одной этикетки."
 
-    # Считаем общий итог
     total_volume = sum(row['volume_sum'] or 0 for row in stats)
 
-    # Формируем сообщение
     message_lines = [f"📊 Статистика за сегодня {today_tg} (в литрах):\n"]
     for row in stats:
         product = row['product_name']
         volume = round(row['volume_sum'] or 0, 2)
         message_lines.append(f"• {product}: {volume} л.")
-    
+
     message_lines.append(f"\n🔹 Итого: {round(total_volume, 2)} л.")
 
-    message = "\n".join(message_lines)
-    send_telegram_message(message)
-    return message
+    return "\n".join(message_lines)
