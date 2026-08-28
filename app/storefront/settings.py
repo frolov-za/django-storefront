@@ -1,18 +1,28 @@
 from pathlib import Path
-from celery.schedules import crontab
 import os
+
 from dotenv import load_dotenv
+
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+def env_bool(name, default=False):
+    """Read a conventional boolean value from the environment."""
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-
 TOGETHER_API_KEY = os.getenv('TOGETHER_API_KEY')
 
-SECRET_KEY = 'your-secret-key'
-DEBUG = os.environ.get('DEBUG', "True"),
+SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')
+DEBUG = env_bool('DEBUG', default=True)
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '.ngrok-free.app', 'storefront.local', 'storefront.netbird.cloud']
 CSRF_TRUSTED_ORIGINS = [
     "https://127.0.0.1",
@@ -108,7 +118,7 @@ WSGI_APPLICATION = 'storefront.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.environ.get('SQLITE_PATH', "db.sqlite3"),
+        'NAME': os.environ.get('SQLITE_PATH', BASE_DIR / 'db.sqlite3'),
     }
 }
 
@@ -130,8 +140,9 @@ LOGGING = {
     },
 }
 
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', "redis://localhost:6379/0"),
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', "redis://localhost:6379/0"),
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_TIMEZONE = TIME_ZONE
