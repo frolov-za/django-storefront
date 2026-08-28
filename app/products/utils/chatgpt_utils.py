@@ -12,7 +12,7 @@ def generate_product_description(name):
 Упомяни вкус, аромат и кому он подойдет. Разбей на абзацы.
 """
     response = requests.post(
-        "https://api.together.xyz/inference",
+        "https://api.together.ai/v1/chat/completions",
         headers={
             "Authorization": f"Bearer {settings.TOGETHER_API_KEY}",
             "Content-Type": "application/json",

@@ -48,8 +48,8 @@
     </div>
     <div class="action-section">
     <h1>Выбор тары</h1>
-    <button onclick="sendPrint(selectedProductBarcode, 1000)">1 Литр</button>
-    <button onclick="sendPrint(selectedProductBarcode, 1500)">1,5 Литра</button> <!-- Workaraound пока не работает ЕГАИС, берется баркод для 1л -->
+    <button onclick="sendPrint(1000)">1 Литр</button>
+    <button onclick="sendPrint(1500)">1,5 Литра</button>
     </div>
 </div>
 
@@ -59,10 +59,8 @@
     document.querySelectorAll('.card').forEach(card => {
         card.addEventListener('click', () => {
         selectedProductId = card.dataset.id;
-        selectedProductName = card.dataset.name;
-        selectedProductDescription = card.dataset.description;
-        selectedProductBarcode = card.dataset.barcode;
-        selectedProductBarcode15 = card.dataset.barcode15;
+        const selectedProductName = card.dataset.name;
+        const selectedProductDescription = card.dataset.description;
         document.getElementById('modalName').innerText = `${selectedProductName}`;
         document.getElementById('modalDescription').innerText = `${selectedProductDescription}`;
         // document.getElementById('modalBarcode').innerText = `${selectedProductBarcode}`;
@@ -85,7 +83,7 @@
         }, 300);
     });
     
-    function sendPrint(barcode, volume) {
+    function sendPrint(volume) {
     fetch('labels/print/', {
         method: 'POST',
         headers: {
@@ -93,8 +91,7 @@
             'X-CSRFToken': '{{ csrf_token }}',
         },
         body: JSON.stringify({
-            product_name: selectedProductName,
-            barcode: barcode,
+            product_id: selectedProductId,
             volume: volume 
         })
     })
