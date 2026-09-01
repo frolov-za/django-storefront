@@ -31,6 +31,13 @@ CSRF_TRUSTED_ORIGINS = [
     "http://storefront.local",
     "https://storefront.netbird.cloud",]
 
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 TIME_ZONE = 'Europe/Moscow'
 USE_TZ = True
 

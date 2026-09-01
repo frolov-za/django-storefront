@@ -83,19 +83,22 @@
         }, 300);
     });
     
-    function sendPrint(volume) {
-    fetch('labels/print/', {
+function sendPrint(volume) {
+    const csrftoken = getCookie('csrftoken');
+
+    fetch('/labels/print/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}',
+            'X-CSRFToken': csrftoken,
         },
         body: JSON.stringify({
             product_id: selectedProductId,
-            volume: volume 
+            volume: volume
         })
     })
     .then(response => response.json().then(json => {
+
         document.getElementById('overlay').click();
 
         if (response.ok && json.success) {
@@ -110,22 +113,26 @@
     });
 }
 
-    // CSRF-токен (если Django)
-    function getCookie(name) {
+function getCookie(name) {
     let cookieValue = null;
+
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
+
         for (const cookie of cookies) {
-        const trimmed = cookie.trim();
-        if (trimmed.startsWith(name + '=')) {
-            cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
-            break;
-        }
+            const trimmed = cookie.trim();
+
+            if (trimmed.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(
+                    trimmed.substring(name.length + 1)
+                );
+                break;
+            }
         }
     }
-    return cookieValue;
-    }   
 
+    return cookieValue;
+}
 
     
     function showToast(message, type) {
