@@ -16,26 +16,48 @@ RU_MONTHS = (
 
 
 def send_email(config, subject, plain_body, recipients, *, html_body=None, attachment_path=None):
+    if config.smtp_use_ssl and config.smtp_use_tls:
+        raise ValueError("Нельзя одновременно использовать SSL и STARTTLS")
+
     message = EmailMessage()
     message["Subject"] = subject
     message["From"] = config.from_email
     message["To"] = ", ".join(recipients)
     message["Date"] = formatdate(localtime=True)
+
     message.set_content(plain_body)
+
     if html_body:
         message.add_alternative(html_body, subtype="html")
+
     if attachment_path:
         with open(attachment_path, "rb") as attachment:
             message.add_attachment(
-                attachment.read(), maintype="application", subtype="zip",
+                attachment.read(),
+                maintype="application",
+                subtype="zip",
                 filename=os.path.basename(attachment_path),
             )
 
-    server_class = smtplib.SMTP_SSL if config.smtp_use_ssl else smtplib.SMTP
-    with server_class(config.smtp_host, config.smtp_port, timeout=30) as server:
-        if not config.smtp_use_ssl and config.smtp_use_tls:
+    if config.smtp_use_ssl:
+        server_class = smtplib.SMTP_SSL
+    else:
+        server_class = smtplib.SMTP
+
+    with server_class(
+        config.smtp_host,
+        config.smtp_port,
+        timeout=30,
+    ) as server:
+
+        if config.smtp_use_tls:
             server.starttls()
-        server.login(config.smtp_username, config.smtp_password)
+
+        server.login(
+            config.smtp_username,
+            config.smtp_password,
+        )
+
         server.send_message(message)
 
 

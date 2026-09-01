@@ -95,7 +95,7 @@
         {% for tare in tares %}
             <button
                 type="button"
-                onclick="sendPrint({{ tare.value }})"
+                onclick="sendPrint('{{ tare.value|escapejs }}')"
             >
                 {{ tare.name }}
             </button>
