@@ -73,12 +73,320 @@ def send_test_email(config_id):
 
 def build_backup_email(backup_name, size_mb, backup_date, *, error_detail=None):
     date_text = f"{backup_date.day} {RU_MONTHS[backup_date.month - 1]} {backup_date.year}"
-    status = "Ошибка при создании бэкапа" if error_detail else "Бэкап успешно создан"
+    time_text = backup_date.strftime("%H:%M:%S")
+
+    if error_detail:
+        status_color = "#ef4444"
+        status_bg = "#fef2f2"
+        status_text = "Ошибка при создании бэкапа"
+        icon = "✕"
+    else:
+        status_color = "#22c55e"
+        status_bg = "#f0fdf4"
+        status_text = "Бэкап успешно создан"
+        icon = "✓"
+
+    error_block = ""
+    if error_detail:
+        error_block = f"""
+        <tr>
+          <td style="padding: 0 32px 24px 32px;">
+            <div style="
+                background-color: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 8px;
+                padding: 16px;
+                font-family: 'Courier New', monospace;
+                font-size: 13px;
+                color: #991b1b;
+                word-break: break-all;
+            ">
+              {error_detail}
+            </div>
+          </td>
+        </tr>
+        """
+
+    html = f"""\
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f7;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                 Roboto, Helvetica, Arial, sans-serif;
+">
+
+  <table role="presentation"
+         width="100%"
+         cellpadding="0"
+         cellspacing="0"
+         style="background-color: #f4f4f7; padding: 40px 16px;">
+
+    <tr>
+      <td align="center">
+
+        <table role="presentation"
+               width="600"
+               cellpadding="0"
+               cellspacing="0"
+               style="
+                   max-width: 600px;
+                   width: 100%;
+                   background-color: #ffffff;
+                   border-radius: 12px;
+                   overflow: hidden;
+                   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+               ">
+
+          <!-- Header -->
+          <tr>
+            <td style="
+                background-color: #1e293b;
+                padding: 32px;
+                text-align: center;
+            ">
+              <div style="
+                  width: 48px;
+                  height: 48px;
+                  background-color: #334155;
+                  border-radius: 10px;
+                  display: inline-block;
+                  line-height: 48px;
+                  text-align: center;
+                  margin-bottom: 12px;
+              ">
+                <span style="font-size: 24px;">📦</span>
+              </div>
+
+              <div style="
+                  color: #ffffff;
+                  font-size: 20px;
+                  font-weight: 600;
+                  margin-top: 8px;
+              ">
+                StoreFront
+              </div>
+
+              <div style="
+                  color: #94a3b8;
+                  font-size: 13px;
+                  margin-top: 4px;
+              ">
+                Резервное копирование
+              </div>
+            </td>
+          </tr>
+
+          <!-- Status -->
+          <tr>
+            <td style="padding: 32px 32px 0 32px;">
+
+              <table role="presentation"
+                     cellpadding="0"
+                     cellspacing="0"
+                     style="
+                         background-color: {status_bg};
+                         border-radius: 8px;
+                         width: 100%;
+                     ">
+
+                <tr>
+                  <td style="padding: 16px 20px;">
+
+                    <table role="presentation"
+                           cellpadding="0"
+                           cellspacing="0">
+
+                      <tr>
+                        <td style="
+                            width: 32px;
+                            height: 32px;
+                            background-color: {status_color};
+                            border-radius: 50%;
+                            text-align: center;
+                            vertical-align: middle;
+                        ">
+                          <span style="
+                              color: #ffffff;
+                              font-size: 16px;
+                              font-weight: bold;
+                              line-height: 32px;
+                          ">
+                            {icon}
+                          </span>
+                        </td>
+
+                        <td style="
+                            padding-left: 12px;
+                            color: {status_color};
+                            font-size: 15px;
+                            font-weight: 600;
+                        ">
+                          {status_text}
+                        </td>
+                      </tr>
+
+                    </table>
+
+                  </td>
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Backup information -->
+          <tr>
+            <td style="padding: 24px 32px;">
+
+              <table role="presentation"
+                     width="100%"
+                     cellpadding="0"
+                     cellspacing="0"
+                     style="border-collapse: collapse;">
+
+                <tr>
+                  <td style="
+                      padding: 12px 0;
+                      border-bottom: 1px solid #e2e8f0;
+                      color: #64748b;
+                      font-size: 13px;
+                  ">
+                    Имя файла
+                  </td>
+
+                  <td style="
+                      padding: 12px 0;
+                      border-bottom: 1px solid #e2e8f0;
+                      color: #1e293b;
+                      font-size: 13px;
+                      font-weight: 500;
+                      text-align: right;
+                  ">
+                    {backup_name}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="
+                      padding: 12px 0;
+                      border-bottom: 1px solid #e2e8f0;
+                      color: #64748b;
+                      font-size: 13px;
+                  ">
+                    Дата
+                  </td>
+
+                  <td style="
+                      padding: 12px 0;
+                      border-bottom: 1px solid #e2e8f0;
+                      color: #1e293b;
+                      font-size: 13px;
+                      font-weight: 500;
+                      text-align: right;
+                  ">
+                    {date_text}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="
+                      padding: 12px 0;
+                      border-bottom: 1px solid #e2e8f0;
+                      color: #64748b;
+                      font-size: 13px;
+                  ">
+                    Время
+                  </td>
+
+                  <td style="
+                      padding: 12px 0;
+                      border-bottom: 1px solid #e2e8f0;
+                      color: #1e293b;
+                      font-size: 13px;
+                      font-weight: 500;
+                      text-align: right;
+                  ">
+                    {time_text}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="
+                      padding: 12px 0;
+                      color: #64748b;
+                      font-size: 13px;
+                  ">
+                    Размер архива
+                  </td>
+
+                  <td style="
+                      padding: 12px 0;
+                      color: #1e293b;
+                      font-size: 13px;
+                      font-weight: 500;
+                      text-align: right;
+                  ">
+                    {size_mb:.2f} МБ
+                  </td>
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Error -->
+          {error_block}
+
+          <!-- Footer -->
+          <tr>
+            <td style="
+                padding: 24px 32px 32px 32px;
+                border-top: 1px solid #e2e8f0;
+            ">
+              <p style="
+                  margin: 0;
+                  color: #94a3b8;
+                  font-size: 12px;
+                  line-height: 1.5;
+                  text-align: center;
+              ">
+                Автоматическое уведомление системы резервного копирования
+                StoreFront.<br>
+                Не отвечайте на это письмо.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+
+  </table>
+
+</body>
+</html>
+"""
+
     plain_text = (
-        f"{status}\n\nИмя файла: {backup_name}\nДата: {date_text}\n"
-        f"Время: {backup_date:%H:%M:%S}\nРазмер: {size_mb:.2f} МБ\n"
+        f"{status_text}\n\n"
+        f"Имя файла: {backup_name}\n"
+        f"Дата: {date_text}\n"
+        f"Время: {time_text}\n"
+        f"Размер: {size_mb:.2f} МБ\n"
     )
+
     if error_detail:
         plain_text += f"\nОшибка: {error_detail}\n"
-    html = "<br>".join(plain_text.splitlines())
+
     return html, plain_text
