@@ -48,8 +48,10 @@ def print_product_label(*, product_id, volume) -> PrintResult:
 
     printer = get_active_printer()
     zpl_data = generate_zpl(product.name, barcode, printer.label_template)
-    if not send_zpl(zpl_data, printer):
-        raise PrintingError("Ошибка печати")
+    error = send_zpl(zpl_data, printer)
+
+    if error is not True:
+        raise PrintingError(f"Ошибка печати: {error}")
 
     LabelPrintLog.objects.create(product_name=product.name, barcode=barcode, volume=volume)
     return PrintResult()
