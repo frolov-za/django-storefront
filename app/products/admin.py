@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.http import JsonResponse
 from django.utils.safestring import mark_safe
-from .models import Product
+from .models import Product, Tare
 from products.integrations.together import TogetherAPIError
 from products.services.descriptions import generate_product_description
 import json
@@ -45,6 +45,12 @@ class ProductAdmin(admin.ModelAdmin):
         });
         </script>
         """)
+
+@admin.register(Tare)
+class TareAdmin(admin.ModelAdmin):
+    list_display = ("name", "value", "type")
+    list_filter = ("type",)
+    search_fields = ("name",)
 
     def get_urls(self):
         urls = super().get_urls()
