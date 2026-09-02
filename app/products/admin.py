@@ -13,6 +13,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'barcode', 'weight_product', 'barcode15')
     search_fields = ('name', 'barcode', 'barcode15', 'weight_product')
     readonly_fields = ('generate_button',)
+    ordering = ('id',)
 
     def generate_button(self, obj=None):
         return mark_safe("""
@@ -51,6 +52,7 @@ class TareAdmin(admin.ModelAdmin):
     list_display = ("name", "value", "type")
     list_filter = ("type",)
     search_fields = ("name",)
+    ordering = ('id', "type")
 
     def get_urls(self):
         urls = super().get_urls()
