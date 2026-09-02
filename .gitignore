@@ -23,3 +23,5 @@ coverage.xml
 .DS_Store
 .todo.list
 .venv
+*db.sqlite3
+data/db.sqlite3

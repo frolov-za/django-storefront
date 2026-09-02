@@ -2,9 +2,9 @@ from django.contrib import admin
 from django.urls import path
 from django.http import JsonResponse
 from django.utils.safestring import mark_safe
-from .models import Product
-from django.utils.html import escape
-from .utils.chatgpt_utils import generate_product_description
+from .models import Product, Tare
+from products.integrations.together import TogetherAPIError
+from products.services.descriptions import generate_product_description
 import json
 
 @admin.register(Product)
@@ -46,6 +46,12 @@ class ProductAdmin(admin.ModelAdmin):
         </script>
         """)
 
+@admin.register(Tare)
+class TareAdmin(admin.ModelAdmin):
+    list_display = ("name", "value", "type")
+    list_filter = ("type",)
+    search_fields = ("name",)
+
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -62,6 +68,8 @@ class ProductAdmin(admin.ModelAdmin):
                     return JsonResponse({"error": "Название не указано"}, status=400)
                 description = generate_product_description(name)
                 return JsonResponse({"description": description})
-            except Exception as e:
-                return JsonResponse({"error": str(e)}, status=500)
+            except TogetherAPIError as error:
+                return JsonResponse({"error": str(error)}, status=502)
+            except Exception:
+                return JsonResponse({"error": "Не удалось сгенерировать описание"}, status=500)
         return JsonResponse({"error": "Метод не поддерживается"}, status=405)

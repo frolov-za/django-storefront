@@ -1,165 +1,323 @@
 {% load static %}
 {% load pwa %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     {% progressive_web_app_meta %}
-    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <link rel="shortcut icon"
+          href="{% static 'img/favicon.ico' %}"
+          type="image/x-icon">
+
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="{% static 'img/apple-touch-icon.png' %}">
+
+    <link rel="stylesheet"
+          href="{% static 'css/index.css' %}">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover">
+
     <title>StoreFront</title>
 </head>
+
 <body>
+
 <header>
     <div class="logo-center">
         <a href="/admin">
-            <img src="{% static 'img/gastonom-logo.jpg' %}" alt="gastonom-logo">
+            <img src="{% static 'img/gastonom-logo.jpg' %}"
+                 alt="gastonom-logo">
         </a>
     </div>
+
     <div class="button-group-left">
-        <button class="button" onclick="forceReload()">♻️</button>
-        <a href="/custom_label" target="_blank" class="button">🎲</a >
+        <button
+            type="button"
+            class="button"
+            onclick="forceReload()">
+            ♻️
+        </button>
+
+        <a href="/custom_label" class="button">🎲</a>
     </div>
+
     <div class="button-group-right">
-        <a href="/dashboard" target="_blank" class="button">📋</a >
-        <a href="/docs/index.html" target="_blank" class="button">ⓘ</a>
+        <a href="/dashboard" class="button">📋</a>
+        <a href="/docs/index.html" class="button">ⓘ</a>
     </div>
 </header>
-    <div class="grid"> 
-        {% for product in products %}
-            <div class="card" data-id="{{ product.id }}" data-name="{{ product.name }}" data-description="{{ product.description }}" data-barcode="{{ product.barcode }}" data-barcode15="{{ product.barcode15 }}">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" width="100" height="100"><br>
-                <!-- {{ product.name }} -->
-            </div>
+
+
+<div class="grid">
+    {% for product in products %}
+        <div
+            class="card"
+            data-id="{{ product.id }}"
+            data-name="{{ product.name }}"
+            data-description="{{ product.description }}"
+        >
+            {% if product.image %}
+                <img
+                    src="{{ product.image.url }}"
+                    alt="{{ product.name }}"
+                    width="100"
+                    height="100"
+                >
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+
+<div class="overlay" id="overlay"></div>
+
+<div class="modal" id="modal">
+
+    <div class="image-section">
+        <img
+            id="modalImage"
+            src=""
+            alt="Product"
+        >
+    </div>
+
+    <div class="description-section">
+        <h1 id="modalName">Название</h1>
+        <p id="modalDescription">Описание</p>
+    </div>
+
+    <div class="action-section">
+        <h1>Выбор тары</h1>
+
+        {% for tare in tares %}
+            <button
+                type="button"
+                onclick="sendPrint('{{ tare.value|escapejs }}')"
+            >
+                {{ tare.name }}
+            </button>
+        {% empty %}
+            <p>Тара не настроена</p>
         {% endfor %}
     </div>
 
-<div class="overlay" id="overlay"></div>
-<div class="modal" id="modal">
-    <div class="image-section">
-    <img id="modalImage" src="" alt="Product">
-    </div>
-    <div class="description-section">
-    <h1 id="modalName">Название</h1>
-    <p id="modalDescription">Описание</p>
-    <p class="skip_info_field" id="modalBarcode">Артикул 1 литр </p>
-    <p class="skip_info_field" id="modalBarcode15">Артикул 1,5 литра</p>
-    </div>
-    <div class="action-section">
-    <h1>Выбор тары</h1>
-    <button onclick="sendPrint(selectedProductBarcode, 1000)">1 Литр</button>
-    <button onclick="sendPrint(selectedProductBarcode, 1500)">1,5 Литра</button> <!-- Workaraound пока не работает ЕГАИС, берется баркод для 1л -->
-    </div>
 </div>
+
 
 <script>
     let selectedProductId = null;
-    
+    let printInProgress = false;
+
+
+    /*
+     * Открытие карточки товара
+     */
     document.querySelectorAll('.card').forEach(card => {
         card.addEventListener('click', () => {
-        selectedProductId = card.dataset.id;
-        selectedProductName = card.dataset.name;
-        selectedProductDescription = card.dataset.description;
-        selectedProductBarcode = card.dataset.barcode;
-        selectedProductBarcode15 = card.dataset.barcode15;
-        document.getElementById('modalName').innerText = `${selectedProductName}`;
-        document.getElementById('modalDescription').innerText = `${selectedProductDescription}`;
-        // document.getElementById('modalBarcode').innerText = `${selectedProductBarcode}`;
-        // document.getElementById('modalBarcode15').innerText = `${selectedProductBarcode15}`;
-        document.getElementById('modalImage').src = card.querySelector('img').src;
-        document.getElementById('overlay').style.display = 'block';
-    
-        const modal = document.getElementById('modal');
-        modal.classList.add('show');
-        modal.style.display = 'flex';
+            selectedProductId = card.dataset.id;
+
+            const selectedProductName = card.dataset.name;
+            const selectedProductDescription = card.dataset.description;
+
+            const modalName = document.getElementById('modalName');
+            const modalDescription = document.getElementById('modalDescription');
+            const modalImage = document.getElementById('modalImage');
+            const overlay = document.getElementById('overlay');
+            const modal = document.getElementById('modal');
+
+            modalName.textContent = selectedProductName;
+            modalDescription.textContent = selectedProductDescription;
+
+            const cardImage = card.querySelector('img');
+
+            if (cardImage) {
+                modalImage.src = cardImage.src;
+                modalImage.alt = selectedProductName;
+            } else {
+                modalImage.src = '';
+                modalImage.alt = '';
+            }
+
+            overlay.style.display = 'block';
+
+            modal.classList.add('show');
+            modal.style.display = 'flex';
         });
     });
-    
-    document.getElementById('overlay').addEventListener('click', () => {
-        document.getElementById('overlay').style.display = 'none';
+
+
+    /*
+     * Закрытие modal
+     */
+    function closeModal() {
+        const overlay = document.getElementById('overlay');
         const modal = document.getElementById('modal');
+
+        overlay.style.display = 'none';
         modal.classList.remove('show');
+
         setTimeout(() => {
-        modal.style.display = 'none';
+            modal.style.display = 'none';
         }, 300);
-    });
-    
-    function sendPrint(barcode, volume) {
-    fetch('labels/print/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}',
-        },
-        body: JSON.stringify({
-            product_name: selectedProductName,
-            barcode: barcode,
-            volume: volume 
-        })
-    })
-    .then(response => response.json().then(json => {
-        document.getElementById('overlay').click();
+    }
 
-        if (response.ok && json.success) {
-            showToast(json.message || 'Этикетка отправлена!', 'success');
-        } else {
-            showToast(json.error || 'Ошибка при печати', 'error');
-        }
-    }))
-    .catch(error => {
-        console.error("Ошибка:", error);
-        showToast('Сервер не ответил', 'error');
-    });
-}
 
-    // CSRF-токен (если Django)
-    function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (const cookie of cookies) {
-        const trimmed = cookie.trim();
-        if (trimmed.startsWith(name + '=')) {
-            cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
-            break;
+    /*
+     * Закрытие по нажатию на overlay
+     */
+    document.getElementById('overlay').addEventListener('click', closeModal);
+
+
+    /*
+     * Печать этикетки
+     */
+    async function sendPrint(volume) {
+        if (!selectedProductId) {
+            showToast('Товар не выбран', 'error');
+            return;
         }
+
+        if (printInProgress) {
+            return;
+        }
+
+        printInProgress = true;
+
+        const printButtons = document.querySelectorAll(
+            '.action-section button'
+        );
+
+        printButtons.forEach(button => {
+            button.disabled = true;
+        });
+
+        try {
+            const csrftoken = getCookie('csrftoken');
+
+            const response = await fetch('/labels/print/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({
+                    product_id: selectedProductId,
+                    volume: volume
+                })
+            });
+
+            let json;
+
+            try {
+                json = await response.json();
+            } catch (error) {
+                showToast(
+                    `Ошибка сервера: ${response.status}`,
+                    'error'
+                );
+                return;
+            }
+
+            closeModal();
+
+            if (response.ok && json.success) {
+                showToast(
+                    json.message || 'Этикетка отправлена!',
+                    'success'
+                );
+            } else {
+                showToast(
+                    json.error || 'Ошибка при печати',
+                    'error'
+                );
+            }
+
+        } catch (error) {
+            console.error('Ошибка печати:', error);
+
+            showToast(
+                'Сервер не ответил',
+                'error'
+            );
+
+        } finally {
+            printInProgress = false;
+
+            printButtons.forEach(button => {
+                button.disabled = false;
+            });
         }
     }
-    return cookieValue;
-    }   
 
 
-    
+    /*
+     * Получение CSRF cookie
+     */
+    function getCookie(name) {
+        let cookieValue = null;
+
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+
+            for (const cookie of cookies) {
+                const trimmed = cookie.trim();
+
+                if (trimmed.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(
+                        trimmed.substring(name.length + 1)
+                    );
+
+                    break;
+                }
+            }
+        }
+
+        return cookieValue;
+    }
+
+
+    /*
+     * Toast уведомления
+     */
     function showToast(message, type) {
-    console.log("Toast:", message, type);
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.className = `toast show ${type}`;
-    toast.classList.remove('hidden');
+        console.log('Toast:', message, type);
 
-    setTimeout(() => {
-        toast.classList.remove('show');
+        const toast = document.getElementById('toast');
+
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        toast.classList.remove('hidden');
+
         setTimeout(() => {
-            toast.classList.add('hidden');
-        }, 500);
-    }, 3500);
-}
+            toast.classList.remove('show');
 
-// JS кнопки обновления страницы
-const forceReload = () => {
-            // Создаем объект URL для работы с параметрами
-            const url = new URL(window.location.href);
-            
-            // Добавляем/обновляем параметр 'force'
-            url.searchParams.set('force', Date.now());
-            
-            // Перезагружаем страницу
-            window.location.href = url.toString();
-        };
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 500);
 
-    </script>
-    <!-- Нотификации -->
-    <div id="toast" class="toast hidden"></div>     
+        }, 3500);
+    }
+
+
+    /*
+     * Принудительное обновление страницы
+     */
+    function forceReload() {
+        const url = new URL(window.location.href);
+
+        url.searchParams.set('force', Date.now());
+
+        window.location.href = url.toString();
+    }
+
+</script>
+
+
+<!-- Нотификации -->
+<div id="toast" class="toast hidden"></div>
+
 </body>
 </html>
