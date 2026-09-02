@@ -3,8 +3,9 @@ from cropperjs.models import CropperImageField
 
 class Product(models.Model):
     name = models.CharField(max_length=100, help_text="Наименование товара")
-    barcode = models.CharField(max_length=50, help_text="Артикул для тары 1 литр") 
-    barcode15 = models.CharField(max_length=50, help_text="Артикул для тары 1.5 литра")
+    barcode = models.CharField(max_length=13, help_text="Артикул товара") 
+    barcode15 = models.CharField(max_length=13, help_text="Артикул для тары 1.5 литра")
+    weight_product = models.BooleanField(default=False, help_text="Весовой товар EAN13, при формировании штрихкода последние 5 цифр определяются нажатой кнопкой в интерфейсе. Контрольная цифра (13) расчитывается автоматически")
     description = models.TextField(blank=True, help_text="Описание товара, отображается при выборе товара")
     image = CropperImageField(dimensions=(250, 250), upload_to='product_images/')
 

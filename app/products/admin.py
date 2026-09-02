@@ -9,9 +9,9 @@ import json
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    fields = ('name', 'barcode', 'barcode15', 'image', 'description', 'generate_button')
-    list_display = ('id', 'name', 'barcode', 'barcode15')
-    search_fields = ('name', 'barcode', 'barcode15')
+    fields = ('name', 'barcode', 'barcode15', 'weight_product', 'image', 'description', 'generate_button')
+    list_display = ('id', 'name', 'barcode', 'weight_product', 'barcode15')
+    search_fields = ('name', 'barcode', 'barcode15', 'weight_product')
     readonly_fields = ('generate_button',)
 
     def generate_button(self, obj=None):
