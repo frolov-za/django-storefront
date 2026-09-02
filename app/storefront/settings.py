@@ -150,10 +150,19 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
+
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'maxBytes': 10 * 1024 * 1024,  # 10 MB
+            'backupCount': 5,
+            'encoding': 'utf-8',
+            'formatter': 'default',
+        },
     },
 
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': 'DEBUG' if DEBUG else 'INFO',
     },
 }

@@ -3,6 +3,7 @@ services:
     build: ./app
     volumes:
       - ./data:/app/data
+      - ./logs:/app/logs
     command: ["python", "manage.py", "migrate", "--noinput"]
     env_file:
       - .env_docker
@@ -16,6 +17,7 @@ services:
       - static_volume:/app/staticfiles
       - ./media:/app/media
       - uwsgi-socket:/tmp/uwsgi
+      - ./logs:/app/logs
     command: >
       sh -c "python manage.py collectstatic --noinput &&
              gunicorn storefront.wsgi:application --bind 0.0.0.0:8000"
@@ -35,6 +37,7 @@ services:
       - ./data:/app/data
       - static_volume:/app/staticfiles
       - ./media:/app/media
+      - ./logs:/app/logs
     command: ["celery", "-A", "storefront", "beat", "--loglevel=info"]
     env_file:
       - .env_docker
@@ -53,6 +56,7 @@ services:
       - static_volume:/app/staticfiles
       - ./media:/app/media
 #      - /mnt/usb:/tmp/backup #For local BackUps 
+      - ./logs:/app/logs
     command: ["celery", "-A", "storefront", "worker", "--loglevel=info"]
     env_file:
       - .env_docker
