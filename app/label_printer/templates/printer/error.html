@@ -86,61 +86,41 @@
          */
 
         .top-bar {
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
-            margin-bottom: 25px;
-
+            width: 100%;
+            margin-bottom: 50px;
         }
 
-
-        /*
-         * Кнопка навигации.
-         */
-
         .navigation-button {
-
             display: inline-flex;
-
             align-items: center;
-
             justify-content: center;
 
             padding: 10px 16px;
 
             background-color: #2d2d2d;
-
             color: #e0e0e0;
 
             border: 1px solid #444;
-
             border-radius: 6px;
 
             text-decoration: none;
-
-            font-size: 14px;
-
-            cursor: pointer;
+            font-size: 16px;
 
             white-space: nowrap;
+
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
             transition:
                 background-color 0.2s,
                 transform 0.2s;
-
         }
 
-
         .navigation-button:hover {
-
             background-color: #3d3d3d;
-
             transform: translateY(-1px);
-
         }
 
 
@@ -244,11 +224,12 @@
 
         <div class="top-bar">
 
-            <a href="/"
-               class="navigation-button">
-
+            <a href="/" class="navigation-button">
                 ⬅️ Назад
+            </a>
 
+            <a href="/printer/diagnostics/" class="navigation-button">
+                🛠️ Диагностика
             </a>
 
         </div>

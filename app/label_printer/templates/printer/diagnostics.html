@@ -84,59 +84,43 @@
          * Кнопка "Назад" слева.
          */
 
-        .top-bar {
+    .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 50px;
+    }
 
-            display: flex;
+    .navigation-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
 
-            align-items: center;
+        padding: 10px 16px;
 
-            justify-content: flex-start;
+        background-color: #2d2d2d;
+        color: #e0e0e0;
 
-            margin-bottom: 25px;
+        border: 1px solid #444;
+        border-radius: 6px;
 
-        }
+        text-decoration: none;
+        font-size: 16px;
 
+        white-space: nowrap;
 
-        .navigation-button {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
-            display: inline-flex;
+        transition:
+            background-color 0.2s,
+            transform 0.2s;
+    }
 
-            align-items: center;
-
-            justify-content: center;
-
-            padding: 10px 16px;
-
-            background-color: #2d2d2d;
-
-            color: #e0e0e0;
-
-            border: 1px solid #444;
-
-            border-radius: 6px;
-
-            text-decoration: none;
-
-            font-size: 14px;
-
-            cursor: pointer;
-
-            white-space: nowrap;
-
-            transition:
-                background-color 0.2s,
-                transform 0.2s;
-
-        }
-
-
-        .navigation-button:hover {
-
-            background-color: #3d3d3d;
-
-            transform: translateY(-1px);
-
-        }
+    .navigation-button:hover {
+        background-color: #3d3d3d;
+        transform: translateY(-1px);
+    }
 
 
         h2 {
@@ -369,14 +353,14 @@
 
 
         <!-- Верхняя панель -->
-
         <div class="top-bar">
 
-            <a href="/"
-               class="navigation-button">
-
+            <a href="/" class="navigation-button">
                 ⬅️ Назад
+            </a>
 
+            <a href="/printer/diagnostics/" class="navigation-button">
+                🛠️ Диагностика
             </a>
 
         </div>
