@@ -17,7 +17,7 @@ def generate_zpl(product_name, barcode, template):
 
     font = f"^CW{template.font_letter},{template.font_name}^CI28^FS"
     barcode_code = (
-        f"^FO{template.barcode_position}^BEN,{template.barcode_height},Y,N,N"
+        f"^FO{template.barcode_position}^BEN,{template.barcode_height},Y,N,{template.barcode_control_digit}"
         f"^FD{barcode}^FS"
     )
     product_name_code = (

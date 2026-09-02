@@ -6,6 +6,7 @@ from django.db import models
 
 
 class LabelTemplate(models.Model):
+    CONTROL_DIGITS = [("Y", "Проверять контрольную сумму"), ("N", "Отключить проверку контрольной суммы")]
     name = models.CharField(max_length=255, unique=True)
     label_hight = models.CharField(max_length=20, default="160", blank=True, null=True, help_text="Указывается в точках")
     label_wight = models.CharField(max_length=20, default="240", blank=True, null=True, help_text="Указывается в точках")
@@ -13,7 +14,8 @@ class LabelTemplate(models.Model):
     font_letter = models.CharField(max_length=1, default="0")
     barcode_height = models.PositiveIntegerField(default=100)
     barcode_position = models.CharField(max_length=20, default="20,1", help_text="Указывается в точках в формате 0,0 (^FOx,y)")
-    barcode_human_readable = models.BooleanField(default=True)
+    barcode_human_readable = models.BooleanField(default=True, help_text="Печатать название товара под штрихкодом")
+    barcode_control_digit = models.CharField(max_length=1, choices=CONTROL_DIGITS, default="N", help_text="При включении пересчитывает 13 цифру штрихкода EAN13")
     product_name_font_size = models.PositiveIntegerField(default=30)
     product_name_via_pillow = models.BooleanField(default=False, help_text="Имя товара генируется в виде изображения и подставляется в этикетку, применимо, в случае, если в принтер не загружен русский шрифт (есть проблемы с центровкой и качеством шрифта)")
     product_position = models.CharField(max_length=20, default="20,1", help_text="Указывается в точках в формате 0,0 (^FOx,y)")
