@@ -1,164 +1,257 @@
 {% load static %}
+
 <!DOCTYPE html>
-<html>
+
+<html lang="ru">
+
 <head>
-    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+
+    <link rel="shortcut icon"
+          href="{% static 'img/favicon.ico' %}"
+          type="image/x-icon">
+
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="{% static 'img/apple-touch-icon.png' %}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>StoreFront - ZPL Diagnostics Error</title>
-</head>
-<body>
-    <a href="/" class="back-button">⬅️</a>
-    <div class="content-wrapper">
-        <div class="container">
-    <h1>Ошибка при подключении к принтеру</h1>
-    <p>{{ error }}</p>
-        </div>
-    </div>
-</body>
-        <style>
+
+
+    <style>
+
         body {
+
             background-color: #121212;
+
             color: #e0e0e0;
+
             margin: 0;
+
             font-family: sans-serif;
+
         }
-        .tabs {
-            margin: 20px 0;
-            border-bottom: 1px solid #444;
-        }
-        
-        .tablink {
-            background-color: #2d2d2d;
-            color: #e0e0e0;
-            border: none;
-            padding: 12px 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 4px 4px 0 0;
-            margin-right: 4px;
-        }
-        
-        .tablink:hover {
-            background-color: #3d3d3d;
-        }
-        
-        .tablink.active {
-            background-color: #388E3C; /* Более темный оттенок зеленого */
-            color: white;
-            position: relative;
-            top: 1px;
-        }
-        
-        .tabcontent {
-            display: none;
-            padding: 20px;
-            border: 1px solid #444;
-            border-top: none;
-            border-radius: 16px;
-            background-color: #1e1e1e;
-            animation: fadeEffect 0.5s;
-        }
-        
-        .container {
-            background-color: #1b1b1b;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.4);
-            border: 1px solid #333;
-            width: 100%;
-            margin: 0 auto;
-            box-sizing: border-box;
-            overflow-x: auto;
-        }
+
 
         .content-wrapper {
+
             padding-top: 15px;
+
             max-width: 1200px;
+
             margin: 0 auto;
+
             padding-left: 15px;
+
             padding-right: 15px;
+
             box-sizing: border-box;
+
         }
 
-        @keyframes fadeEffect {
-            from {opacity: 0;}
-            to {opacity: 1;}
-        }
-    
-        table {
+
+        .container {
+
+            background-color: #1b1b1b;
+
+            border-radius: 16px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 0 10px rgba(0, 0, 0, 0.4);
+
+            border: 1px solid #333;
+
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+
+            margin: 0 auto;
+
+            box-sizing: border-box;
+
+            overflow: hidden;
+
         }
-        
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #444;
-        }
-        
-        th {
-            background-color: #388E3C; /* Более темный оттенок зеленого */
-            color: white;
-        }
-        
-        tr:hover {
-            background-color: #2d2d2d;
-        }
-    
-        .custom-date-section form {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .custom-date-section input[type="date"] {
-            padding: 8px;
-            border: 1px solid #444;
-            border-radius: 4px;
-            background-color: #2d2d2d;
-            color: #e0e0e0;
-        }
-        
-        .date-range-picker {
+
+
+        /*
+         * Верхняя панель.
+         *
+         * Кнопка назад находится
+         * внутри контейнера и всегда слева.
+         */
+
+        .top-bar {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 50px;
         }
-        
-        .date-range-picker span {
-            color: #aaa;
-        }
-        
-        .date-range-picker input[type="date"] {
-            padding: 8px;
-            border: 1px solid #444;
-            border-radius: 4px;
-            width: 180px;
+
+        .navigation-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 10px 16px;
+
             background-color: #2d2d2d;
             color: #e0e0e0;
-        }
-        /* Кнопка Назад фиксирована сверху слева */
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background: #1b1b1b;
-            color: white;
+
+            border: 1px solid #444;
             border-radius: 6px;
+
             text-decoration: none;
             font-size: 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            z-index: 1000;
-            transition: background 0.3s, transform 0.3s;
+
+            white-space: nowrap;
+
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+            transition:
+                background-color 0.2s,
+                transform 0.2s;
         }
 
-        .back-button:hover {
-            background: #2e2e2e;
-            transform: scale(1.05);
+        .navigation-button:hover {
+            background-color: #3d3d3d;
+            transform: translateY(-1px);
         }
+
+
+        /*
+         * Заголовок ошибки.
+         */
+
+        h1 {
+
+            margin-top: 0;
+
+            margin-bottom: 15px;
+
+            color: #ff5252;
+
+            font-size: 26px;
+
+        }
+
+
+        /*
+         * Текст ошибки.
+         */
+
+        .error-message {
+
+            margin: 0;
+
+            padding: 15px;
+
+            background-color: #2d1717;
+
+            border: 1px solid #6d2929;
+
+            border-radius: 8px;
+
+            color: #ffdddd;
+
+            line-height: 1.6;
+
+            overflow-wrap: anywhere;
+
+            word-break: break-word;
+
+        }
+
+
+        /*
+         * Мобильная версия.
+         */
+
+        @media (max-width: 600px) {
+
+            .content-wrapper {
+
+                padding-left: 10px;
+
+                padding-right: 10px;
+
+            }
+
+
+            .container {
+
+                padding: 20px;
+
+            }
+
+
+            .navigation-button {
+
+                padding: 9px 12px;
+
+                font-size: 13px;
+
+            }
+
+
+            h1 {
+
+                font-size: 22px;
+
+            }
+
+        }
+
     </style>
+
+</head>
+
+
+<body>
+
+
+<div class="content-wrapper">
+
+    <div class="container">
+
+
+        <!-- Верхняя панель -->
+
+        <div class="top-bar">
+
+            <a href="/" class="navigation-button">
+                ⬅️ Назад
+            </a>
+
+            <a href="/printer/diagnostics/" class="navigation-button">
+                🛠️ Диагностика
+            </a>
+
+        </div>
+
+
+        <!-- Ошибка -->
+
+        <h1>
+            Ошибка при подключении к принтеру
+        </h1>
+
+
+        <p class="error-message">
+            {{ error }}
+        </p>
+
+
+    </div>
+
+</div>
+
+
+</body>
+
 </html>

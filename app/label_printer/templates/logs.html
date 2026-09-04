@@ -1,0 +1,480 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+    <link rel="shortcut icon"
+          href="{% static 'img/favicon.ico' %}"
+          type="image/x-icon">
+
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="{% static 'img/apple-touch-icon.png' %}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>StoreFront - Логи</title>
+
+</head>
+
+
+<body>
+
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            <div class="top-bar">
+
+                <a href="/" class="navigation-button">
+                    ⬅️ Назад
+                </a>
+
+                <a href="/printer/diagnostics/" class="navigation-button">
+                    🛠️ Диагностика
+                </a>
+
+            </div>
+            <h1>Логи</h1>
+
+            <!-- Логи -->
+            <div id="django-logs"
+                 class="django-logs">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <style>
+
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+
+        .content-wrapper {
+            padding-top: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 15px;
+            padding-right: 15px;
+            box-sizing: border-box;
+        }
+
+
+        .container {
+            background-color: #1b1b1b;
+            border-radius: 16px;
+            padding: 30px;
+
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+
+            border: 1px solid #333;
+
+            width: 100%;
+
+            margin: 0 auto;
+
+            box-sizing: border-box;
+
+            overflow: hidden;
+        }
+
+
+        /*
+         * Верхняя панель.
+         *
+         * Назад — слева.
+         * Обновить лог + Диагностика — справа.
+         */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 50px;
+        }
+
+        .navigation-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 10px 16px;
+
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+
+            border: 1px solid #444;
+            border-radius: 6px;
+
+            text-decoration: none;
+            font-size: 16px;
+
+            white-space: nowrap;
+
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+            transition:
+                background-color 0.2s,
+                transform 0.2s;
+        }
+
+        .navigation-button:hover {
+            background-color: #3d3d3d;
+            transform: translateY(-1px);
+        }
+
+
+        /*
+         * Контейнер логов.
+         */
+        .django-logs {
+            background-color: #111;
+
+            border: 1px solid #333;
+
+            border-radius: 8px;
+
+            padding: 15px;
+
+            /*
+             * Вертикальная прокрутка остаётся,
+             * горизонтальной больше нет.
+             */
+            overflow-x: hidden;
+
+            overflow-y: auto;
+
+            /*
+             * Ограничиваем высоту,
+             * чтобы страница не росла бесконечно.
+             */
+            max-height: 70vh;
+
+            font-family: monospace;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            /*
+             * Сохраняем переводы строк,
+             * но разрешаем автоматический перенос.
+             */
+            white-space: pre-wrap;
+
+            /*
+             * Переносим даже очень длинные
+             * последовательности символов.
+             */
+            overflow-wrap: anywhere;
+
+            word-break: break-word;
+
+            /*
+             * Важно для flex/grid-контейнеров:
+             * элемент не пытается стать шире
+             * родительского контейнера.
+             */
+            min-width: 0;
+
+            box-sizing: border-box;
+        }
+
+
+        /*
+         * Отдельная строка лога.
+         */
+        .log-line {
+            display: block;
+
+            width: 100%;
+
+            min-height: 1.6em;
+
+            /*
+             * Разрешаем перенос текста
+             * внутри отдельной записи.
+             */
+            white-space: pre-wrap;
+
+            overflow-wrap: anywhere;
+
+            word-break: break-word;
+        }
+
+
+        /*
+         * DEBUG.
+         */
+        .log-debug {
+            color: #888;
+        }
+
+
+        /*
+         * INFO.
+         */
+        .log-info {
+            color: #e0e0e0;
+        }
+
+
+        /*
+         * WARNING.
+         */
+        .log-warning {
+            color: #ffd54f;
+        }
+
+
+        /*
+         * ERROR.
+         */
+        .log-error {
+            color: #ff5252;
+
+            font-weight: 500;
+        }
+
+
+        /*
+         * CRITICAL.
+         */
+        .log-critical {
+            color: #ff1744;
+
+            font-weight: bold;
+        }
+
+
+        /*
+         * Неизвестный уровень.
+         */
+        .log-unknown {
+            color: #bdbdbd;
+        }
+
+
+        /*
+         * Мобильная версия.
+         */
+        @media (max-width: 600px) {
+
+            .content-wrapper {
+                padding-left: 10px;
+
+                padding-right: 10px;
+            }
+
+
+            .container {
+                padding: 20px;
+            }
+
+
+            .top-bar {
+                align-items: stretch;
+
+                flex-direction: column;
+
+                gap: 10px;
+            }
+
+
+            /*
+             * На мобильном Назад остаётся
+             * первым элементом слева.
+             */
+            .back-button {
+                align-self: flex-start;
+            }
+
+
+            /*
+             * Остальные кнопки располагаются
+             * справа в своей строке.
+             */
+            .right-buttons {
+                display: flex;
+
+                justify-content: flex-end;
+
+                width: 100%;
+
+                flex-wrap: wrap;
+            }
+
+
+            .navigation-button {
+                padding: 9px 12px;
+
+                font-size: 13px;
+            }
+
+
+            .django-logs {
+                font-size: 12px;
+
+                max-height: 65vh;
+
+                padding: 10px;
+            }
+
+        }
+
+    </style>
+
+
+    <script>
+
+        async function loadLogs() {
+
+            const logsContainer =
+                document.getElementById("django-logs");
+
+
+            try {
+
+                const response =
+                    await fetch("{% url 'django_logs' %}");
+
+
+                if (!response.ok) {
+
+                    logsContainer.innerHTML =
+                        '<span class="log-error">' +
+                        'Ошибка загрузки логов' +
+                        '</span>';
+
+                    return;
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                /*
+                 * Очищаем предыдущий вывод.
+                 */
+                logsContainer.innerHTML = "";
+
+
+                /*
+                 * Выводим каждую строку отдельно.
+                 */
+                data.logs.forEach(line => {
+
+                    const element =
+                        document.createElement("span");
+
+
+                    element.classList.add("log-line");
+
+
+                    /*
+                     * Определяем уровень логирования.
+                     */
+                    if (line.includes("[CRITICAL]")) {
+
+                        element.classList.add(
+                            "log-critical"
+                        );
+
+                    } else if (line.includes("[ERROR]")) {
+
+                        element.classList.add(
+                            "log-error"
+                        );
+
+                    } else if (line.includes("[WARNING]")) {
+
+                        element.classList.add(
+                            "log-warning"
+                        );
+
+                    } else if (line.includes("[INFO]")) {
+
+                        element.classList.add(
+                            "log-info"
+                        );
+
+                    } else if (line.includes("[DEBUG]")) {
+
+                        element.classList.add(
+                            "log-debug"
+                        );
+
+                    } else {
+
+                        element.classList.add(
+                            "log-unknown"
+                        );
+
+                    }
+
+
+                    /*
+                     * textContent используется намеренно.
+                     *
+                     * Логи могут содержать произвольный
+                     * текст, поэтому не используем innerHTML.
+                     */
+                    element.textContent = line;
+
+
+                    logsContainer.appendChild(
+                        element
+                    );
+
+                });
+
+
+                /*
+                 * После обновления прокручиваем
+                 * контейнер к последней записи.
+                 */
+                logsContainer.scrollTop =
+                    logsContainer.scrollHeight;
+
+
+            } catch (error) {
+
+                logsContainer.innerHTML =
+                    '<span class="log-error">' +
+                    'Ошибка подключения к серверу логов' +
+                    '</span>';
+
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        /*
+         * Загружаем лог при открытии страницы.
+         */
+        document.addEventListener(
+            "DOMContentLoaded",
+            loadLogs
+        );
+
+    </script>
+
+</body>
+
+</html>

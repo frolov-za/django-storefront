@@ -23,13 +23,13 @@ TOGETHER_API_KEY = os.getenv('TOGETHER_API_KEY')
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')
 DEBUG = env_bool('DEBUG', default=True)
-ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '.ngrok-free.app', 'storefront.local', 'storefront.netbird.cloud']
+ALLOWED_HOSTS = ['*','.localhost', '127.0.0.1', '.ngrok-free.app', 'storefront.local', 'storefront.netbird.cloud']
 CSRF_TRUSTED_ORIGINS = [
     "https://127.0.0.1",
     "https://storefront.local",  
     "http://127.0.0.1",
     "http://storefront.local",
-    "https://storefront.netbird.cloud",]
+    "https://storefront.netbird.cloud"]
 
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = False
@@ -98,7 +98,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+#    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -150,10 +150,19 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
+
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'maxBytes': 10 * 1024 * 1024,  # 10 MB
+            'backupCount': 5,
+            'encoding': 'utf-8',
+            'formatter': 'default',
+        },
     },
 
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': 'DEBUG' if DEBUG else 'INFO',
     },
 }

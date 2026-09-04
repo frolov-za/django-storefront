@@ -1,13 +1,13 @@
 services:
 
   # ============================================================
-  # Build Django image
+  # Build Django image locally
   # ============================================================
 
   app:
-    image: storefront:${BRANCH:-main}
+    image: storefront:local
     build:
-      context: https://github.com/frolov-za/django-storefront.git#${BRANCH:-main}
+      context: ./app
 
 
   # ============================================================
@@ -15,7 +15,7 @@ services:
   # ============================================================
 
   migrate:
-    image: storefront:${BRANCH:-main}
+    image: storefront:local
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -30,7 +30,7 @@ services:
   # ============================================================
 
   web:
-    image: storefront:${BRANCH:-main}
+    image: storefront:local
     container_name: django-web
     volumes:
       - ./data:/app/data
@@ -56,7 +56,7 @@ services:
   # ============================================================
 
   celery_beat:
-    image: storefront:${BRANCH:-main}
+    image: storefront:local
     container_name: django-celery_beat
     volumes:
       - ./data:/app/data
@@ -79,14 +79,14 @@ services:
   # ============================================================
 
   celery_worker:
-    image: storefront:${BRANCH:-main}
+    image: storefront:local
     container_name: django-celery_worker
     volumes:
       - ./data:/app/data
       - static_volume:/app/staticfiles
       - ./media:/app/media
-      - ./logs:/app/logs
 #      - /mnt/usb:/tmp/backup
+      - ./logs:/app/logs
     command: ["celery", "-A", "storefront", "worker", "--loglevel=info"]
     env_file:
       - .env_docker

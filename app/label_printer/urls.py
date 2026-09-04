@@ -17,4 +17,6 @@ urlpatterns = [
     ),
     path('dashboard/', views.sales_dashboard, name='sales_dashboard'),
     path('printer/diagnostics/', zpl_diagnostics_view, name='zpl_diagnostics'),
+    path("api/logs/", views.django_logs, name="django_logs"),
+    path("logs/", views.logs, name="logs"),
 ]

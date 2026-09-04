@@ -58,6 +58,17 @@ a:hover {
   color: var(--fg);
 }
 
+.logo {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.logo:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
 /* Layout */
 .container {
   display: flex;

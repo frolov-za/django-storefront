@@ -1,3 +1,4 @@
+import logging
 import os
 import smtplib
 from datetime import datetime
@@ -9,15 +10,37 @@ from django.utils import timezone
 from label_printer.models import EmailServerConfig
 
 
+logger = logging.getLogger(__name__)
+
+
 RU_MONTHS = (
     "января", "февраля", "марта", "апреля", "мая", "июня",
     "июля", "августа", "сентября", "октября", "ноября", "декабря",
 )
 
 
-def send_email(config, subject, plain_body, recipients, *, html_body=None, attachment_path=None):
+def send_email(
+    config,
+    subject,
+    plain_body,
+    recipients,
+    *,
+    html_body=None,
+    attachment_path=None,
+):
+    logger.debug(
+        "Подготовка отправки письма: получатели=%s, тема=%s",
+        recipients,
+        subject,
+    )
+
     if config.smtp_use_ssl and config.smtp_use_tls:
-        raise ValueError("Нельзя одновременно использовать SSL и STARTTLS")
+        logger.error(
+            "Ошибка настройки SMTP: одновременно включены SSL и STARTTLS"
+        )
+        raise ValueError(
+            "Нельзя одновременно использовать SSL и STARTTLS"
+        )
 
     message = EmailMessage()
     message["Subject"] = subject
@@ -28,9 +51,15 @@ def send_email(config, subject, plain_body, recipients, *, html_body=None, attac
     message.set_content(plain_body)
 
     if html_body:
+        logger.debug("Добавлена HTML-версия письма")
         message.add_alternative(html_body, subtype="html")
 
     if attachment_path:
+        logger.debug(
+            "Добавлено вложение: %s",
+            attachment_path,
+        )
+
         with open(attachment_path, "rb") as attachment:
             message.add_attachment(
                 attachment.read(),
@@ -41,8 +70,16 @@ def send_email(config, subject, plain_body, recipients, *, html_body=None, attac
 
     if config.smtp_use_ssl:
         server_class = smtplib.SMTP_SSL
+        logger.debug("Используется SMTP через SSL")
     else:
         server_class = smtplib.SMTP
+        logger.debug("Используется SMTP без SSL")
+
+    logger.debug(
+        "Подключение к SMTP-серверу: %s:%s",
+        config.smtp_host,
+        config.smtp_port,
+    )
 
     with server_class(
         config.smtp_host,
@@ -51,28 +88,110 @@ def send_email(config, subject, plain_body, recipients, *, html_body=None, attac
     ) as server:
 
         if config.smtp_use_tls:
+            logger.debug("Запуск STARTTLS")
             server.starttls()
+            logger.debug("STARTTLS успешно запущен")
+
+        logger.debug(
+            "Авторизация на SMTP-сервере: пользователь=%s",
+            config.smtp_username,
+        )
 
         server.login(
             config.smtp_username,
             config.smtp_password,
         )
 
+        logger.debug("SMTP-авторизация выполнена")
+
         server.send_message(message)
+
+    logger.info(
+        "Письмо успешно отправлено: тема=%s, получатели=%s",
+        subject,
+        recipients,
+    )
 
 
 def send_test_email(config_id):
+    logger.debug(
+        "Запуск отправки тестового письма: config_id=%s",
+        config_id,
+    )
+
     try:
         config = EmailServerConfig.objects.get(pk=config_id)
-        recipients = config.get_recipients_list() or [config.smtp_username]
-        send_email(config, "Тестовое письмо", "Это тестовое письмо для проверки SMTP-настроек.", recipients)
+
+        recipients = (
+            config.get_recipients_list()
+            or [config.smtp_username]
+        )
+
+        logger.debug(
+            "Получатели тестового письма: %s",
+            recipients,
+        )
+
+        send_email(
+            config,
+            "Тестовое письмо",
+            "Это тестовое письмо для проверки SMTP-настроек.",
+            recipients,
+        )
+
+    except EmailServerConfig.DoesNotExist:
+        logger.error(
+            "SMTP-конфигурация не найдена: config_id=%s",
+            config_id,
+        )
+
+        return {
+            "success": False,
+            "detail": "SMTP-конфигурация не найдена",
+        }
+
     except Exception as error:
-        return {"success": False, "detail": str(error)}
-    return {"success": True, "detail": ", ".join(recipients)}
+        logger.exception(
+            "Ошибка при отправке тестового письма: config_id=%s",
+            config_id,
+        )
+
+        return {
+            "success": False,
+            "detail": str(error),
+        }
+
+    logger.info(
+        "Тестовое письмо успешно отправлено: config_id=%s, получатели=%s",
+        config_id,
+        recipients,
+    )
+
+    return {
+        "success": True,
+        "detail": ", ".join(recipients),
+    }
 
 
-def build_backup_email(backup_name, size_mb, backup_date, *, error_detail=None):
-    date_text = f"{backup_date.day} {RU_MONTHS[backup_date.month - 1]} {backup_date.year}"
+def build_backup_email(
+    backup_name,
+    size_mb,
+    backup_date,
+    *,
+    error_detail=None,
+):
+    logger.debug(
+        "Формирование письма о бэкапе: файл=%s, размер=%.2f МБ, ошибка=%s",
+        backup_name,
+        size_mb,
+        bool(error_detail),
+    )
+
+    date_text = (
+        f"{backup_date.day} "
+        f"{RU_MONTHS[backup_date.month - 1]} "
+        f"{backup_date.year}"
+    )
     time_text = backup_date.strftime("%H:%M:%S")
 
     if error_detail:
@@ -87,6 +206,7 @@ def build_backup_email(backup_name, size_mb, backup_date, *, error_detail=None):
         icon = "✓"
 
     error_block = ""
+
     if error_detail:
         error_block = f"""
         <tr>
